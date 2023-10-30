@@ -1,41 +1,48 @@
-include <
+#include <AFMotor.h>
 
-AF_DCMotor motor1(1); //Motor 1 connected to pin1
-AF_DCMotor motor2(2); //Motor 2 connected to pin2
-AF_DCMotor motor3(3); //Motor 3 connected to pin3
-AF_DCMotor motor4(4); //Motor 4 connected to pin4
+AF_DCMotor motor1 (1); //Front left wheel
+AF_DCMOtor motor2 (2); //Front right wheel
+AF_DCMOtor motor3 (3); //Back left wheel
+AF_DCMOtor motor4 (4); //Back right wheel
+
+//input: theta, power, and turn
+sin = Math.sin(theta - Math.PI/4);
+cos = Math.cos(theta - Math.PI/4);
+max = Math.max(Math.abs(sin),Math.abs(cos));
+
+//how do I calculate power and turn??
+motor1 = power * cos/max + turn;
+motor2 = power * sin/max + turn;
+motor3 = power * sin/max + turn;
+motor4 = power * cos/max + turn;
+
+if ((power + Math.abs(turn)) > 1) {
+  motor1 /= power + turn;
+  motor2 /= power + turn;
+  motor3 /= power + turn;
+  motor4 /= power + turn;
+}
+
+//this method uses values from a joystick, we're going to have to input the y and x values for each theta we want
+x = 
+y = 
+turn = 
+
+theta = Math.atan2(y,x);
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode
-
-
-  int moverobot(int speedX, int speedY, int rotation){
-    //Calculate motor speeds for mecanum drive
-  int motor1speed = speedX + speedY + rotation; //Left front wheel
-  int motor2speed = speedX + speedY - rotation; //Right front wheel
-  int motor3speed = speedX + speedY + rotation; //Left back wheel
-  int motor4speed = speedX + speedY - rotation; //Right back wheel
-    return (motor1speed, motor2speed, motor3speed, motor4speed)
-  }
-
+  pinMode(1, OUTPUT);
+  pinMode(1, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUPUT);
+ 
 }
 
 
 void loop() {
   // put your main code here, to run repeatedly:
 
-s(255, 0 , 0);
-delay (10000);
 
 }
 
-int moverobot(int speedX, int speedY, int rotation){
-//Calculate motor speeds for mecanum drive
-int motor1speed = speedX + speedY + rotation; //Left front wheel
-int motor2speed = speedX + speedY - rotation; //Right front wheel
-int motor3speed = speedX + speedY + rotation; //Left back wheel
-int motor4speed = speedX + speedY - rotation; //Right back wheel
-
-
-}
