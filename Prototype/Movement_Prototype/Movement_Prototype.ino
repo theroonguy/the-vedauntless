@@ -1,9 +1,12 @@
+#include <Adafruit_MotorShield.h>
+
 #include <AFMotor.h>
 
 AF_DCMotor motor1 (1); //Front left wheel
 AF_DCMOtor motor2 (2); //Front right wheel
 AF_DCMOtor motor3 (3); //Back left wheel
 AF_DCMOtor motor4 (4); //Back right wheel
+
 
 //input: theta, power, and turn
 sin = Math.sin(theta - Math.PI/4);
@@ -24,6 +27,7 @@ if ((power + Math.abs(turn)) > 1) {
 }
 
 //this method uses values from a joystick, we're going to have to input the y and x values for each theta we want
+//figure out if its an int or a float
 x = 
 y = 
 turn = 
@@ -33,7 +37,7 @@ theta = Math.atan2(y,x);
 void setup() {
   // put your setup code here, to run once:
   pinMode(1, OUTPUT);
-  pinMode(1, OUTPUT);
+  pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(4, OUPUT);
  
