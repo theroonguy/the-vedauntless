@@ -9,21 +9,24 @@ AF_DCMOtor motor4 (4); //Back right wheel
 
 
 //input: theta, power, and turn
-sin = Math.sin(theta - Math.PI/4);
-cos = Math.cos(theta - Math.PI/4);
-max = Math.max(Math.abs(sin),Math.abs(cos));
+void move(int theta, float power, float turn){
+  sin = Math.sin(theta - Math.PI/4);
+  cos = Math.cos(theta - Math.PI/4);
+  max = Math.max(Math.abs(sin),Math.abs(cos));
 
-//how do I calculate power and turn??
-motor1 = power * cos/max + turn;
-motor2 = power * sin/max + turn;
-motor3 = power * sin/max + turn;
-motor4 = power * cos/max + turn;
+  //how do I calculate power and turn??
+  motor1 = power * cos/max + turn;
+  motor2 = power * sin/max + turn;
+  motor3 = power * sin/max + turn;
+  motor4 = power * cos/max + turn;
 
-if ((power + Math.abs(turn)) > 1) {
-  motor1 /= power + turn;
-  motor2 /= power + turn;
-  motor3 /= power + turn;
-  motor4 /= power + turn;
+  if ((power + Math.abs(turn)) > 1) {
+    motor1 /= power + turn;
+    motor2 /= power + turn;
+    motor3 /= power + turn;
+    motor4 /= power + turn;
+  }
+  
 }
 
 //this method uses values from a joystick, we're going to have to input the y and x values for each theta we want
