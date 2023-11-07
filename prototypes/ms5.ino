@@ -15,8 +15,8 @@ int enb = 10;
 int sig = 13;
 
 //calibration
-int msPerMeter = 2000; //ms per meter of linear movement
-int msPer90Degrees = 1875; //ms per 90 degrees of rotation
+int msPerMeter = 4700; //ms per meter of linear movement
+int msPer90Degrees = 1400; //ms per 90 degrees of rotation
 
 void setup() {
   //motor driver pins
@@ -41,11 +41,11 @@ void setup() {
 
 void loop() {
   //ena/b pins, adjusted to correct for drift
-	analogWrite(ena, 252);
+	analogWrite(ena, 250);
 	analogWrite(enb, 255);
 
   //driver forward 3 meters
-  goForward(3); //meters
+  goForward(4); //meters
 
   // rotate one direction, then the other
   rotateClockwise(90); //degrees
@@ -65,7 +65,10 @@ void rotateClockwise(int angle) {
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, HIGH);
   delay(rotateTime);
-  //pause after movement
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
   delay(500);
 }
 
@@ -78,6 +81,10 @@ void rotateCounterclockwise(int angle) {
 	digitalWrite(in4, LOW);
   delay(rotateTime);
   //pause after movement
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
   delay(500);
 }
 
@@ -122,4 +129,5 @@ void endRun() {
 	digitalWrite(in3, LOW);
 	digitalWrite(in4, LOW);
   digitalWrite(sig, LOW);
+  delay(1000000);
 }
