@@ -11,8 +11,10 @@ void setup() {
 void loop() {
   //goForward(100, 1);
   //movementtest(90, 255, 0);
-  simple_movement(0,0,255); //speed: 0-255, turn: 0-1, strafe: ?-?
-  delay(1000);
+  // simple_movement(0,0,255); //speed: 0-255, turn: 0-1, strafe: ?-?
+  // delay(1000);
+  float pi = 3.1415926;
+  move(pi/2, 1, 0);
 }
 
 //Low-level functions
@@ -126,4 +128,67 @@ void movementtest(int theta, int power, int turn) {
   motor4.setSpeed(int(motor4power));
   motor4.run(FORWARD);
   delay(1000);
+}
+
+// NEW MOVE FUNC
+void move(float theta, float power, float turn) {
+  // define variables for calculations
+  float pi = 3.1415926;
+  float sin = sin(theta - pi/4);
+  float cos = cos(theta - pi/4);
+  float maxval = max(abs(sin),abs(cos));
+
+  // calculate motor power levels
+  float leftFront   = power * cos/maxval + turn;
+  float rightFront  = power * sin/maxval - turn;
+  float leftRear    = power * sin/maxval + turn;
+  float rightRear   = power * cos/maxval - turn;
+
+  // normalize motor values if they exceed max power
+  if ((power + abs(turn)) > 1) {
+    leftFront /= power + turn;
+    rightFront /= power + turn;
+    leftRear /= power + turn;
+    rightRear /= power + turn;
+  }
+
+  // run motors at proper speeds
+  motor1.setSpeed(int(leftFront));
+  if (leftFront > 0) {
+    motor1.run(FORWARD);
+  } else {
+    motor1.run(BACKWARD);
+  }
+
+  motor2.setSpeed(int(rightFront));
+  if (rightFront > 0) {
+    motor2.run(FORWARD);
+  } else {
+    motor2.run(BACKWARD);
+  }
+
+  motor3.setSpeed(int(leftRear));
+  if (leftRear > 0) {
+    motor3.run(FORWARD);
+  } else {
+    motor3.run(BACKWARD);
+  }
+
+  motor4.setSpeed(int(rightRear));
+  if (rightRear > 0) {
+    motor4.run(FORWARD);
+  } else {
+    motor4.run(BACKWARD);
+  }
+
+  // print motor speeds
+  Serial.print("  Left Front: ")
+  Serial.print(leftFront)
+  Serial.print("  Right Front: ")
+  Serial.print(rightFront)
+  Serial.print("  Left Rear: ")
+  Serial.print(leftRear)
+  Serial.print("  Right Rear: ")
+  Serial.print(rightRear)
+
 }
