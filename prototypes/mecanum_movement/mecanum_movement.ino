@@ -5,6 +5,9 @@ AF_DCMotor motor2 (2); //Front right wheel
 AF_DCMotor motor3 (3); //Back left wheel
 AF_DCMotor motor4 (4); //Back right wheel
 
+unsigned long startTime = 0;
+int function_num = 0;
+
 void setup() {
 }
 
@@ -13,8 +16,29 @@ void loop() {
   //movementtest(90, 255, 0);
   // simple_movement(0,0,255); //speed: 0-255, turn: 0-1, strafe: ?-?
   // delay(1000);
+
   float pi = 3.1415926;
-  move(pi/2, 1, 0);
+
+  // depending on what the function number is, continuously run that function
+  if (function_num == 0) {
+    move(pi/2, 1, 0); // should move forward
+  } else if (function_num == 1) {
+    move(0, 1, 0); // should move right
+  } else if (function_num == 2) {
+    move(-pi/2, 1, 0); // should move backward
+  } else if (function_num == 3) {
+    move(pi, 1, 0); // should move left
+  } else if (function_num == 4) {
+    move(0, 0, 1); // should rotate right
+  } else if (function_num == 5) {
+    move(0, 0, -1); // should rotate left
+  }
+
+  if (millis() - startTime >= 1000) { // when 1 second has passed
+    function_num += 1;                // increase function num
+    startTime = millis();             // and restart timer
+  }
+      
 }
 
 //Low-level functions
@@ -182,13 +206,13 @@ void move(float theta, float power, float turn) {
   }
 
   // print motor speeds
-  Serial.print("  Left Front: ")
-  Serial.print(leftFront)
-  Serial.print("  Right Front: ")
-  Serial.print(rightFront)
-  Serial.print("  Left Rear: ")
-  Serial.print(leftRear)
-  Serial.print("  Right Rear: ")
-  Serial.print(rightRear)
+  Serial.print("  Left Front: ");
+  Serial.print(leftFront);
+  Serial.print("  Right Front: ");
+  Serial.print(rightFront);
+  Serial.print("  Left Rear: ");
+  Serial.print(leftRear);
+  Serial.print("  Right Rear: ");
+  Serial.print(rightRear);
 
 }
