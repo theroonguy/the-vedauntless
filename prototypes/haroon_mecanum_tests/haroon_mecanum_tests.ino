@@ -12,6 +12,7 @@ int function_num = 0;
 
 float pi = 3.1415926;
 float timeFor90 = 6700/4;   // time it takes to rotate 90 degrees/ pi/2 rads
+float timeFor2pi = 6700;
 
 void setup() {
   // initialize serial port
@@ -40,7 +41,11 @@ void setup() {
   // moveWithTime(3*pi/4, 1, );
   // moveWithTrajectory2(pi/2, 1, pi/4, 5000);
 
+  ////////// TEST 1 -- MOVE IN CIRCLE
   moveInCircle(10000);
+
+  ////////// TEST 2 -- MOVE WHILE ROTATING
+  moveAndRotate(pi/2, 1, 32);
 }
 
 void moveInCircle(float totalTime) {
@@ -59,15 +64,27 @@ void moveInCircle(float totalTime) {
   move(0, 0, 0);      // end movement
 }
 
-void moveInCircleFacingInwards(float breadth, float totalTime) {
-  moveTimer = millis();
+void moveAndRotate(float theta, float speed, float rotDiv) {
 
-  while ((millis() - moveTimer) <= totalTime) {
-    move(0, 1, 0); // always move perpendicular
-    move(0, 0, 1);
+  float trajectory = theta;
+  
+  float deltaAngle = 2*pi/rotDiv;
+  float deltaTime = timeForAngle(deltaAngle);
+   
+
+  while ((trajectory - 2pi) <= theta) {
+    moveWithTime(trajectory, 1, 0, speed);      // move forward
+    moveWithTime(0, 0, 1, deltaTime);               // rotate
+
+    trajectory += deltaAngle;
   }
 
   move(0, 0, 0);
+
+}
+
+float timeForAngle(float theta) {
+  return theta * timeFor2pi/2*pi
 }
 
 void moveWithTrajectory2(float theta, float power, float angle, float totalTime) {
