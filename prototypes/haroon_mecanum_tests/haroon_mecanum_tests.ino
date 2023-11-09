@@ -12,48 +12,17 @@ int function_num = 0;
 
 float pi = 3.1415926;
 float timeFor90 = 6700/4;   // time it takes to rotate 90 degrees/ pi/2 rads
-float timeFor2pi = 6700;
+float timeFor2pi = 6700-800;
+float velX = 0.190;
+float velY = 0.183;
 
-void setup() {
-  // initialize serial port
-  Serial.begin(9600);
-
-  // turn for time it takes to turn 90 degrees
-  // moveWithTime(0, 0, 1, timeFor90);
-
-  // test with hardcoded rotate with trajectory function
-  // moveWithTime(4*pi/8, 1, 0, timeFor90/4);
-  // moveWithTime(0, 0, 1, timeFor90/4);
-  // moveWithTime(5*pi/8, 1, 0, timeFor90/4);
-  // moveWithTime(0, 0, 1, timeFor90/4);
-  // moveWithTime(6*pi/8, 1, 0, timeFor90/4);
-  // moveWithTime(0, 0, 1, timeFor90/4);
-  // moveWithTime(7*pi/8, 1, 0, timeFor90/4);
-  // moveWithTime(0, 0, 1, timeFor90/4);
-  // moveWithTime(8*pi/8, 1, 0, timeFor90/4);
-
-  // moveWithTime(pi/2, 1, 1, timeFor90);
-
-  // ang vel is (pi/2) * (milliseconds to turn 90 degrees)
-
-  // rotateWithTrajectory(pi/2, 1, 1, 10000);
-  // moveWithTime(0, 1, 1, timeFor90/2); // rotates to 45 degrees
-  // moveWithTime(3*pi/4, 1, );
-  // moveWithTrajectory2(pi/2, 1, pi/4, 5000);
-
-  ////////// TEST 1 -- MOVE IN CIRCLE
-  moveInCircle(10000);
-
-  ////////// TEST 2 -- MOVE WHILE ROTATING
-  moveAndRotate(pi/2, 1, 32);
-}
 
 void moveInCircle(float totalTime) {
   moveTimer = millis();       //start timer
 
   float elapsedTime = 0;      // time since movement started
   float angle = 0;            // initial angle
-  float deltaAngle = (2pi)/totalTime; //deltaAngle is change in angle per millisecond
+  float deltaAngle = (2*pi)/totalTime; //deltaAngle is change in angle per millisecond
 
   while (elapsedTime <= totalTime) {
     elapsedTime = (millis() - moveTimer); // elapsed time is number of milliseconds since movement started
@@ -72,7 +41,7 @@ void moveAndRotate(float theta, float speed, float rotDiv) {
   float deltaTime = timeForAngle(deltaAngle);
    
 
-  while ((trajectory - 2pi) <= theta) {
+  while ((trajectory - 2*pi) <= theta) {
     moveWithTime(trajectory, 1, 0, speed);      // move forward
     moveWithTime(0, 0, 1, deltaTime);               // rotate
 
@@ -84,7 +53,7 @@ void moveAndRotate(float theta, float speed, float rotDiv) {
 }
 
 float timeForAngle(float theta) {
-  return theta * timeFor2pi/2*pi
+  return theta * timeFor2pi/(2*pi);
 }
 
 void moveWithTrajectory2(float theta, float power, float angle, float totalTime) {
@@ -101,39 +70,18 @@ void moveWithTrajectory2(float theta, float power, float angle, float totalTime)
   move(0, 0, 0);
 }
 
-void demonstration() {
-  // initialize variables
-  float power = 1;
-
-  // depending on what the function number is, continuously run that function
-  if (function_num == 0) {
-    move(pi/2, power, 0);       // move forward
-  } else if (function_num == 1) {
-    move(0, power, 0);          // move right
-  } else if (function_num == 2) {
-    move(-pi/2, power, 0);      // move backward
-  } else if (function_num == 3) {
-    move(pi, power, 0);         // move left
-  } else if (function_num == 4) {
-    move(0, 0, power);          // rotate right
-  } else if (function_num == 5) {
-    move(0, 0, -power);         // rotate left
-  } else if (function_num == 6) {
-    move(pi/4, 1, 0);           // northeast
-  } else if (function_num == 7) {
-    move(3*pi/4, 1, 0);         // northwest
-  } else if (function_num == 8) {
-    move(5*pi/4, 1, 0);         // southwest
-  } else if (function_num == 9) {
-    move(7*pi/4, 1, 0);         // southeast
-  } else if (function_num == 10) {
-    move(0, 0, 0);              // stop moving
-  }
-
-  if (millis() - startTime >= 1000) { // when 1 second has passed
-    function_num += 1;                // increase function num
-    startTime = millis();             // and restart timer
-  }
+void demonstration(float interval) {
+  moveWithTime(pi/2, 1, 0, interval);
+  moveWithTime(0, 1, 0, interval);
+  moveWithTime(-pi/2, 1, 0, interval);
+  moveWithTime(pi, 1, 0, interval);
+  moveWithTime(0, 0, 1, timeFor90);
+  moveWithTime(0, 0, -1, timeFor90*2);
+  moveWithTime(pi/4, 1, 0, interval);
+  moveWithTime(3*pi/4, 1, 0, interval);
+  moveWithTime(5*pi/4, 1, 0, interval);
+  moveWithTime(7*pi/4, 1, 0, interval);
+  moveInCircle(10000);
 }
 
 void move(float theta, float power, float turn) {
@@ -242,3 +190,70 @@ void rotateWithTrajectory(float theta, float power, float turn, float mS) {
   // when timer has finished, stop moving
   move(0, 0, 0);
 }
+
+float timeFromX(float meters) {
+  return meters/velX;
+}
+
+float timeFromY(float meters) {
+  return meters/velY * 1000;
+}
+
+void moveXY(float X, float Y) {
+
+  float theta = atan(Y/X); // calculate angle
+  float timeX = timeFromX(X);
+  float timeY = timeFromY(Y);
+  float time = sqrt(sq(timeY)+sq(timeX)); // calculate total time
+
+  moveWithTime(theta, 1, 0, time);
+}
+
+void setup() {
+  // initialize serial port
+  // Serial.begin(9600);
+
+  // turn for time it takes to turn 90 degrees
+  // moveWithTime(0, 0, 1, timeFor90);
+
+  // test with hardcoded rotate with trajectory function
+  // moveWithTime(4*pi/8, 1, 0, timeFor90/4);
+  // moveWithTime(0, 0, 1, timeFor90/4);
+  // moveWithTime(5*pi/8, 1, 0, timeFor90/4);
+  // moveWithTime(0, 0, 1, timeFor90/4);
+  // moveWithTime(6*pi/8, 1, 0, timeFor90/4);
+  // moveWithTime(0, 0, 1, timeFor90/4);
+  // moveWithTime(7*pi/8, 1, 0, timeFor90/4);
+  // moveWithTime(0, 0, 1, timeFor90/4);
+  // moveWithTime(8*pi/8, 1, 0, timeFor90/4);
+
+  // moveWithTime(pi/2, 1, 1, timeFor90);
+
+  // ang vel is (pi/2) * (milliseconds to turn 90 degrees)
+
+  // rotateWithTrajectory(pi/2, 1, 1, 10000);
+  // moveWithTime(0, 1, 1, timeFor90/2); // rotates to 45 degrees
+  // moveWithTime(3*pi/4, 1, );
+  // moveWithTrajectory2(pi/2, 1, pi/4, 5000);
+
+  ////////// TEST 1 -- MOVE IN CIRCLE
+  // moveInCircle(10000);
+
+  ////////// TEST 2 -- MOVE WHILE ROTATING
+  // moveAndRotate(pi/2, 250, 64*4);
+
+  ////////// TEST 3 -- FIND VELOCITIES
+  // moveWithTime(pi/2, 1, 0, timeFromY(0.5));
+
+  ////////// TEST 4 -- MOVE XY
+  // moveXY(0.5, 0.5);
+
+  ////////// TEST 5 -- DEMONSTRATION
+  demonstration(1000);
+}
+
+void loop() {
+
+}
+
+
