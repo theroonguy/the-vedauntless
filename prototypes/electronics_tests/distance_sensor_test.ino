@@ -1,3 +1,6 @@
+//Code taken from Adafruit library
+//Connect SLC and SDA wires to respective pins on Arduinio (Look at 'Communication' row)
+
 #include "Seeed_vl53l0x.h"
 Seeed_vl53l0x VL53L0X;
 
