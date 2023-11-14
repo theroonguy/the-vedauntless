@@ -12,7 +12,7 @@ int function_num = 0;
 
 float pi = 3.1415926;
 float timeFor90 = 6700/4;   // time it takes to rotate 90 degrees/ pi/2 rads
-float timeFor2pi = 6700-800;
+float timeFor2pi = 6700-1800;
 float velX = 0.190;
 float velY = 0.183;
 
@@ -240,7 +240,7 @@ void setup() {
   // moveInCircle(10000);
 
   ////////// TEST 2 -- MOVE WHILE ROTATING
-  // moveAndRotate(pi/2, 250, 64*4);
+  // moveAndRotate(pi/2, 250, 64);
 
   ////////// TEST 3 -- FIND VELOCITIES
   // moveWithTime(pi/2, 1, 0, timeFromY(0.5));
@@ -249,11 +249,15 @@ void setup() {
   // moveXY(0.5, 0.5);
 
   ////////// TEST 5 -- DEMONSTRATION
-  demonstration(1000);
+  // demonstration(1000);
+  // moveInCircle(10000);
+
+
+  pinMode(41, OUTPUT);
 }
 
 void loop() {
-
+  digitalWrite(41, HIGH);
 }
 
 
