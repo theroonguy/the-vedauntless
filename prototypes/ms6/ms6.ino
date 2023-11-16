@@ -2,6 +2,25 @@
 #include "movement.h"
 #include "sensors.h"
 
+void navToMission() {
+  bool atMission = false;
+  float x, y, t; bool v; // Declare variables to hold the data
+
+  // detect which side of map we're on
+  x = Enes100.getX();  // Your X coordinate! 0-4, in meters, -1 if no aruco is not visibility (but you should use Enes100.isVisible to check that instead)
+  y = Enes100.getY();  // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
+  t = convertVisionTo2pi(Enes100.getTheta());  //Your theta! -pi to +pi, in radians, -1 if your aruco is not visible.
+  v = Enes100.isVisible(); // Is your aruco visible? True or False.
+  if (v) {
+    if ( y <= 2) {
+      turnToTheta(t, pi/2);
+    } else {
+      turnToTheta(t, -pi/2);
+    }
+  }
+
+}
+
 void setup() {
   // WIFI
   Enes100.begin("The Vedauntless", CRASH_SITE, 205, 3, 2);
@@ -39,25 +58,7 @@ void setup() {
 }
 
 void loop() {
-  float x, y, t; bool v; // Declare variables to hold the data
-
-  x = Enes100.getX();  // Your X coordinate! 0-4, in meters, -1 if no aruco is not visibility (but you should use Enes100.isVisible to check that instead)
-  y = Enes100.getY();  // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
-  t = Enes100.getTheta();  //Your theta! -pi to +pi, in radians, -1 if your aruco is not visible.
-  v = Enes100.isVisible(); // Is your aruco visible? True or False.
-
-  if (v) // If the ArUco marker is visible
-  {
-      Enes100.print(x); // print out the location
-      Enes100.print(",");
-      Enes100.print(y);
-      Enes100.print(",");
-      Enes100.println(t);
-  }
-  else { // otherwise
-      Enes100.println("Not visible"); // print not visible
-  }
-
+  
   // Transmit the height of the payload in mm
   Enes100.mission(HEIGHT, 270);
   // Transmit the length of the payload in mm

@@ -113,3 +113,27 @@ void moveWithTime(float theta, float power, float turn, float mS) {
   // }
 
 }
+
+float convertVisionTo2pi(float theta) {
+  float thetaFinal = 0;
+  
+  if (theta <= pi && theta >= 0) {
+    thetaFinal = theta;
+  } else if (theta < 0 && theta >= -pi) {
+    thetaFinal = 2*pi + theta;
+  }
+
+  return thetaFinal;
+}
+
+void turnToTheta(float thetaInital, float thetaFinal) {
+  int turn = 0;
+
+  if (thetaInitial > thetaFinal) {
+    turn = 1;
+  } else {
+    turn = -1;
+  }
+
+  moveWithTime(0, 0, turn, timeForAngle(abs(thetaFinal - thetaInitial)));
+}
