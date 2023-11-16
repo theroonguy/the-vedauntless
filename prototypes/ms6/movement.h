@@ -126,7 +126,7 @@ float convertVisionTo2pi(float theta) {
   return thetaFinal;
 }
 
-void turnToTheta(float thetaInital, float thetaFinal) {
+void turnToTheta(float thetaInitial, float thetaFinal) {
   int turn = 0;
 
   if (thetaInitial > thetaFinal) {

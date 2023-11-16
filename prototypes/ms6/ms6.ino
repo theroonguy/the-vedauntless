@@ -1,6 +1,6 @@
 #include "Enes100.h"
 #include "movement.h"
-#include "sensors.h"
+// #include "sensors.h"
 
 void navToMission() {
   bool atMission = false;
@@ -22,52 +22,59 @@ void navToMission() {
 }
 
 void setup() {
+  // moveWithTime(pi/2, 1, 0, 2000);
+
+
   // WIFI
   Enes100.begin("The Vedauntless", CRASH_SITE, 6, 51, 50);
   Enes100.println("Connected...");
 
-  // SENSORS
-  //Color setup
-  pinMode(S0, OUTPUT);
-  pinMode(S1, OUTPUT);
-  pinMode(S2, OUTPUT);
-  pinMode(S3, OUTPUT);
-  pinMode(sensorOut, INPUT);
-  // Setting frequency-scaling to 20%
-  digitalWrite(S0,HIGH);
-  digitalWrite(S1,LOW);
-  Serial.begin(9600);
+  // // SENSORS
+  // //Color setup
+  // pinMode(S0, OUTPUT);
+  // pinMode(S1, OUTPUT);
+  // pinMode(S2, OUTPUT);
+  // pinMode(S3, OUTPUT);
+  // pinMode(sensorOut, INPUT);
+  // // Setting frequency-scaling to 20%
+  // digitalWrite(S0,HIGH);
+  // digitalWrite(S1,LOW);
+  // Serial.begin(9600);
 
-  //Distance setup
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-  SERIAL.begin(9600);
-  Status = VL53L0X.VL53L0X_common_init();
-  if (VL53L0X_ERROR_NONE != Status) {
-      SERIAL.println("start vl53l0x mesurement failed!");
-      VL53L0X.print_pal_error(Status);
-      while (1);
-  }
+  // //Distance setup
+  // VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+  // SERIAL.begin(9600);
+  // Status = VL53L0X.VL53L0X_common_init();
+  // if (VL53L0X_ERROR_NONE != Status) {
+  //     SERIAL.println("start vl53l0x mesurement failed!");
+  //     VL53L0X.print_pal_error(Status);
+  //     while (1);
+  // }
 
-  VL53L0X.VL53L0X_high_accuracy_ranging_init();
+  // VL53L0X.VL53L0X_high_accuracy_ranging_init();
 
-  if (VL53L0X_ERROR_NONE != Status) {
-    SERIAL.println("start vl53l0x mesurement failed!");
-    VL53L0X.print_pal_error(Status);
-    while (1);
-  }
+  // if (VL53L0X_ERROR_NONE != Status) {
+  //   SERIAL.println("start vl53l0x mesurement failed!");
+  //   VL53L0X.print_pal_error(Status);
+  //   while (1);
+  // }
 
+  delay(5000);
   navToMission();
 
 }
 
 void loop() {
   
-  // Transmit the height of the payload in mm
-  Enes100.mission(HEIGHT, 270);
-  // Transmit the length of the payload in mm
-  Enes100.mission(LENGTH, 180);
-  // Transmit the direction of the abnormality for normal in the x direction.
-  Enes100.mission(DIRECTION, NORMAL_X);
-  delay(1000);
+  move(pi/2, 1, 0);
+
+
+  // // Transmit the height of the payload in mm
+  // Enes100.mission(HEIGHT, 270);
+  // // Transmit the length of the payload in mm
+  // Enes100.mission(LENGTH, 180);
+  // // Transmit the direction of the abnormality for normal in the x direction.
+  // Enes100.mission(DIRECTION, NORMAL_X);
+  // delay(1000);
 
 }

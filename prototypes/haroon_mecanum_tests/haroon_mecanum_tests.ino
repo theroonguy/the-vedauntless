@@ -249,11 +249,11 @@ void setup() {
   // moveXY(0.5, 0.5);
 
   ////////// TEST 5 -- DEMONSTRATION
-  // demonstration(1000);
+  demonstration(1000);
   // moveInCircle(10000);
 
 
-  pinMode(41, OUTPUT);
+  // pinMode(41, OUTPUT);
 }
 
 void loop() {
