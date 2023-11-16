@@ -55,6 +55,9 @@ void setup() {
     VL53L0X.print_pal_error(Status);
     while (1);
   }
+
+  navToMission();
+
 }
 
 void loop() {
