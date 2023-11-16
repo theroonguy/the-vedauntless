@@ -1,5 +1,7 @@
 #include <AFMotor.h>
 
+#define abs(x) ((x)>0?(x):-(x))
+
 AF_DCMotor motor1 (1); //Front left wheel
 AF_DCMotor motor2 (2); //Front right wheel
 AF_DCMotor motor3 (3); //Back left wheel
@@ -29,7 +31,6 @@ float timeForAngle(float theta) {
 
 void move(float theta, float power, float turn) {
   // define variables for calculations
-  float pi = 3.1415926;
   float sinV = sin(theta - pi/4);
   float cosV = cos(theta - pi/4);
   float maxval = max(abs(sinV),abs(cosV));
@@ -60,7 +61,6 @@ void move(float theta, float power, float turn) {
     motor1.run(FORWARD);
   } else {
     motor1.run(BACKWARD);
-    leftFront = -leftFront;
   }
 
   motor2.setSpeed(abs(int(rightFront)));
@@ -83,6 +83,18 @@ void move(float theta, float power, float turn) {
   } else {
     motor4.run(BACKWARD);
   }
+
+  // print motor speeds
+  Serial.print("  Left Front: ");
+  Serial.print(leftFront);
+  Serial.print("  Right Front: ");
+  Serial.print(rightFront);
+  Serial.print("  Left Rear: ");
+  Serial.print(leftRear);
+  Serial.print("  Right Rear: ");
+  Serial.print(rightRear);
+  Serial.println("");
+
 }
 
 void moveWithTime(float theta, float power, float turn, float mS) {
@@ -91,12 +103,15 @@ void moveWithTime(float theta, float power, float turn, float mS) {
   // start timer
   moveTimer = millis();   // set moveTimer variable to current time
 
+  Serial.println("Moving started...");
+
   while ((millis() - moveTimer) <= mS) {  // while we haven't reached mS time
     move(theta, power, turn);  // move
   }
 
   // when timer has finished, stop moving
   move(0, 0, 0);
+  Serial.println("Moving stopped.");
 
   // if ((millis() - moveTimer) > mS) {       // when timer has finished
   //   move(0, 0, 0);      // stop moving
