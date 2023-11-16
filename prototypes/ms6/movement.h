@@ -23,16 +23,6 @@ float timeFromY(float meters) {
   return meters/velY * 1000;
 }
 
-void moveXY(float X, float Y) {
-
-  float theta = atan(Y/X); // calculate angle
-  float timeX = timeFromX(X);
-  float timeY = timeFromY(Y);
-  float time = sqrt(sq(timeY)+sq(timeX)); // calculate total time
-
-  moveWithTime(theta, 1, 0, time);
-}
-
 float timeForAngle(float theta) {
   return theta * timeFor2pi/(2*pi);
 }
@@ -112,6 +102,16 @@ void moveWithTime(float theta, float power, float turn, float mS) {
   //   move(0, 0, 0);      // stop moving
   // }
 
+}
+
+void moveXY(float X, float Y) {
+
+  float theta = atan(Y/X); // calculate angle
+  float timeX = timeFromX(X);
+  float timeY = timeFromY(Y);
+  float time = sqrt(sq(timeY)+sq(timeX)); // calculate total time
+
+  moveWithTime(theta, 1, 0, time);
 }
 
 float convertVisionTo2pi(float theta) {

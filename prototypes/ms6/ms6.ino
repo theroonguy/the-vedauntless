@@ -15,7 +15,7 @@ void navToMission() {
     if ( y <= 2) {
       turnToTheta(t, pi/2);
     } else {
-      turnToTheta(t, -pi/2);
+      turnToTheta(t, 3*pi/2);
     }
   }
 
@@ -23,7 +23,7 @@ void navToMission() {
 
 void setup() {
   // WIFI
-  Enes100.begin("The Vedauntless", CRASH_SITE, 205, 3, 2);
+  Enes100.begin("The Vedauntless", CRASH_SITE, 6, 51, 50);
   Enes100.println("Connected...");
 
   // SENSORS
