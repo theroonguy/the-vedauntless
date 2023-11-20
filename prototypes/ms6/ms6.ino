@@ -4,6 +4,7 @@ float normalPS = 0;
 float strafePS = 0;
 float rotatePS = 0;
 
+#include "util.h"
 #include "movement.h"
 #include "sensors.h"
 #include "mission.h"
@@ -25,16 +26,26 @@ void setup() {
   initColorSensor();
   initDistSensor();
   initPot();
-  initServo();
+  //initServo();
+
+  int interval = 2000;
+  int time = 1000;
 
   // CALIBRATE
-  normalPS = calibrateNormal();
-  strafePS = calibrateStrafe();
-  rotatePS = calibrateRotate();
+  // float multiplier = 1.25;
+  // normalPS = calibrateNormal(time, interval) / multiplier;
+  // strafePS = calibrateStrafe(time, interval) / multiplier;
+  // rotatePS = calibrateRotate(time, interval) / multiplier;
 
-  moveWithTime(pi/2, 1, 0, 0.5/normalPS);
+  // Enes100.println(normalPS);
+  // Enes100.println(strafePS);
+  // Enes100.println(rotatePS);
 
-  // navToSite();
+  // moveWithTime(pi/2, 1, 0, (1/normalPS)*1000);    // drive a full meter
+  // delay(10000);
+  // moveWithTime(0, 0, 1, (2*pi)/(rotatePS)*1000);
+
+  // // navToSite();
 
   // moveWithTime(pi, 1, 0, 300);
 

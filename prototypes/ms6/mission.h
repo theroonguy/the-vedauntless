@@ -63,33 +63,39 @@ void turnToFace(float timerange, float error) {
   }
 }
 
-float calibrateNormal() {
-  float yInitial = Enes100.getY();  //Get initial location
+float calibrateNormal(int time, int delayTime) {
+  float yInitial = Enes100.getY(); //Get initial location
   float xInitial = Enes100.getX();
-  moveWithTime(pi / 2, 1, 0, 2000);  //Move forward for two seconds
-  float xFinal = Enes100.getX();          //Get final location
+  moveWithTime(pi / 2, 1, 0, time); //Move forward for two seconds
+  delay(delayTime);
+  float xFinal = Enes100.getX(); //Get final location
   float yFinal = Enes100.getY();
-  float metersPerSecond = sqrt(pow((xFinal - xInitial), 2) + pow((yFinal - yInitial), 2)) / 2;  //Calculate distance traveled
-  moveWithTime(pi / 2, -1, 0, 2000);                      //Return to initial position
+  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal)/(time/1000);  //Calculate distance traveled
+  moveWithTime(pi / 2, -1, 0, time); ///Return to initial position
+  delay(delayTime);
   return metersPerSecond;
 }
 
-float calibrateStrafe() {
+float calibrateStrafe(int time, int delayTime) {
   float yInitial = Enes100.getY();  //Get initial location
   float xInitial = Enes100.getX();
-  moveWithTime(0, 1, 0, 2000);  //Move to the side for two seconds
+  moveWithTime(0, 1, 0, time);  //Move to the side for two seconds
+  delay(delayTime);
   float xFinal = Enes100.getX();     //Get final location
   float yFinal = Enes100.getY();
-  float metersPerSecond = sqrt(pow((xFinal - xInitial), 2) + pow((yFinal - yInitial), 2)) / 2;  //Calculate distance traveled
-  moveWithTime(0, -1, 0, 2000);                           //Return to initial position
+  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal)/(time/1000);  //Calculate distance traveled
+  moveWithTime(0, -1, 0, time); 
+  delay(delayTime);                          //Return to initial position
   return metersPerSecond;
 }
 
-float calibrateRotate() {
+float calibrateRotate(int time, int delayTime) {
   float thetaInitial = convertVisionTo2pi(Enes100.getTheta());  //Get initial angle
-  moveWithTime(0, 0, 1, 2000);                             //Rotate for two seconds
+  moveWithTime(0, 0, 1, time);                             //Rotate for two seconds
+  delay(delayTime);
   float thetaFinal = convertVisionTo2pi(Enes100.getTheta());    //Get final angle
-  float radiansPerSecond = abs(thetaFinal - thetaInitial) / 2;         //Calculate radians per second
-  moveWithTime(0, 0, -1, 2000);         //Return to initial position
+  float radiansPerSecond = abs(thetaFinal - thetaInitial) / (time/1000);         //Calculate radians per second
+  moveWithTime(0, 0, -1, time);         //Return to initial position
+  delay(delayTime);
   return radiansPerSecond;
 }
