@@ -6,7 +6,7 @@ void navToSite() {
   // detect which side of map we're on
   x = Enes100.getX();                          // Your X coordinate! 0-4, in meters, -1 if no aruco is not visibility (but you should use Enes100.isVisible to check that instead)
   y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
-  t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited -pi to +pi, in radians, -1 if your aruco is not visible.
+  t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
   v = Enes100.isVisible();                     // Is your aruco visible? True or False.
 
   // face the other side
