@@ -152,3 +152,8 @@ void turnToTheta(float thetaInitial, float thetaFinal) {
 
   moveWithTime(0, 0, turn, timeForAngle(abs(thetaFinal - thetaInitial)));
 }
+
+void signal() {
+  moveWithTime(0, 0, 1, 100);
+  moveWithTime(0, 0, -1, 100);
+}

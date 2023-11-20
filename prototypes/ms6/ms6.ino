@@ -6,7 +6,7 @@
 bool wifiModuleConnected = false;
 
 void setup() {
-  // Serial.begin(9600);
+  Serial.begin(9600);
 
   // WIFI
   if (wifiModuleConnected) {
@@ -14,41 +14,28 @@ void setup() {
     Enes100.println("Connected...");
   }
 
-  // Serial.println("testingn");
-
   // SENSORS
   initColorSensor();
   initDistSensor();
-
-  // float val = getDistance();
-  // Serial.println(val);
+  initPot();
 
   // navToSite();
 
   // moveWithTime(pi, 1, 0, 300);
 
+  // maintainDist(200);
+  // turnToFace(500, 10);
+
 }
 
 void loop() {
-  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
 
-  memset(&RangingMeasurementData, 0, sizeof(VL53L0X_RangingMeasurementData_t));
-  Status = VL53L0X.PerformSingleRangingMeasurement(&RangingMeasurementData);
-  if (VL53L0X_ERROR_NONE == Status) {
-      if (RangingMeasurementData.RangeMilliMeter >= 2000) {
-          SERIAL.println("out of range!!");
-      } else {
-          SERIAL.print("Measured distance:");
-          SERIAL.print(RangingMeasurementData.RangeMilliMeter);
-          SERIAL.println(" mm");
-      }
-  } else {
-      SERIAL.print("mesurement failed !! Status code =");
-      SERIAL.println(Status);
-  }
+  Serial.println(readPot());
+  servoWrite(90);
 
-  detectAnomaly();
+  // int val = getDistance();
+  // Serial.println(val);
+  // detectAnomaly();
 
-  delay(300);
+  // delay(300);
 }
