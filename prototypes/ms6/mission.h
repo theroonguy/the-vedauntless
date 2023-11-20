@@ -64,39 +64,32 @@ void turnToFace(float timerange, float error) {
   }
 }
 
-float calibrateNormal(int time, int delayTime) {
-  float yInitial = Enes100.getY(); //Get initial location
-  float xInitial = Enes100.getX();
-  moveWithTime(pi / 2, 1, 0, time); //Move forward for two seconds
-  delay(delayTime);
-  float xFinal = Enes100.getX(); //Get final location
-  float yFinal = Enes100.getY();
-  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal)/(time/1000);  //Calculate distance traveled
-  moveWithTime(pi / 2, -1, 0, time); ///Return to initial position
-  delay(delayTime);
-  return metersPerSecond;
-}
+int detectHeight(float distance) {
+  moveUntilBlocked(distance, 0.5);
 
-float calibrateStrafe(int time, int delayTime) {
-  float yInitial = Enes100.getY();  //Get initial location
-  float xInitial = Enes100.getX();
-  moveWithTime(0, 1, 0, time);  //Move to the side for two seconds
-  delay(delayTime);
-  float xFinal = Enes100.getX();     //Get final location
-  float yFinal = Enes100.getY();
-  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal)/(time/1000);  //Calculate distance traveled
-  moveWithTime(0, -1, 0, time); 
-  delay(delayTime);                          //Return to initial position
-  return metersPerSecond;
-}
+  servo.write(150);
+  delay(500);
+  servo.write(120);
+  delay(500);
+  servo.write(90);
+  delay(500);
+  servo.write(60);
+  delay(500);
+  servo.detach();
+  delay(1000);
+  int angle = readPot();
 
-float calibrateRotate(int time, int delayTime) {
-  float thetaInitial = convertVisionTo2pi(Enes100.getTheta());  //Get initial angle
-  moveWithTime(0, 0, 1, time);                             //Rotate for two seconds
-  delay(delayTime);
-  float thetaFinal = convertVisionTo2pi(Enes100.getTheta());    //Get final angle
-  float radiansPerSecond = abs(thetaFinal - thetaInitial) / (time/1000);         //Calculate radians per second
-  moveWithTime(0, 0, -1, time);         //Return to initial position
-  delay(delayTime);
-  return radiansPerSecond;
+  servo.attach(2);
+  servo.write(90);
+  delay(500);
+  servo.write(120);
+  delay(500);
+  servo.write(150);
+  delay(500);
+  servo.write(180);
+  delay(500);
+  servo.detach();
+  delay(1000);
+
+  return angle;
 }

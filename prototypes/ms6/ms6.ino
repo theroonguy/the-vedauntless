@@ -1,17 +1,11 @@
 #include "Enes100.h"
-
-float normalPS = 0;
-float strafePS = 0;
-float rotatePS = 0;
-
 #include "util.h"
 #include "movement.h"
 #include "sensors.h"
 #include "mission.h"
 
 bool wifiModuleConnected = true;
-
-// int angle = 10;
+bool calibrateAtStart = false;
 
 void setup() {
   Serial.begin(9600);
@@ -22,39 +16,19 @@ void setup() {
     Enes100.println("Connected...");
   }
 
-  // SENSORS
+  // CALIBRATE SPEEDS
+  if (calibrateAtStart) {
+    calibrate(2000, 1000, 1.25);
+  }
+
+  // INIT SENSORS
   initColorSensor();
   initDistSensor();
   initPot();
   initServo();
 
-  moveUntilBlocked(150, 0.5);
-
-  servo.write(150);
-  delay(500);
-  servo.write(120);
-  delay(500);
-  servo.write(90);
-  delay(500);
-  servo.write(60);
-  delay(500);
-  servo.detach();
-  delay(1000);
-  Enes100.println(readPot());
-
-
-  // int interval = 2000;
-  // int time = 1000;
-
-  // // CALIBRATE
-  // float multiplier = 1.25;
-  // normalPS = calibrateNormal(time, interval) / multiplier;
-  // strafePS = calibrateStrafe(time, interval) / multiplier;
-  // rotatePS = calibrateRotate(time, interval) / multiplier;
-
-  // Enes100.println(normalPS);
-  // Enes100.println(strafePS);
-  // Enes100.println(rotatePS);
+  int height = detectHeight(150);
+  Enes100.println(height);
 
   // moveWithTime(pi/2, 1, 0, (1/normalPS)*1000);    // drive a full meter
   // delay(10000);
@@ -69,8 +43,6 @@ void setup() {
 }
 
 void loop() {
-
-  // servoWrite(angle);
 
   // scan from 0 to 180 degrees
   // for (angle = 10; angle < 180; angle++) {

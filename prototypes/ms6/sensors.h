@@ -144,7 +144,3 @@ float readPot() {
   int value = map(sensor_value, 0, 1023, 0, 100);  //Map the value from 0, 1023 to 0, 100
   return value;
 }
-
-void servoWrite(float angle) {
-  servo.write(angle);
-}
