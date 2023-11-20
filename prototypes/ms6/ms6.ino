@@ -28,11 +28,11 @@ void setup() {
   initServo();
 
   // CALIBRATE
-  forwardMPS = calibrateNormal();
-  strafeMPS = calibrateStrafe();
-  rotateRPS = calibrateRotate();
+  normalPS = calibrateNormal();
+  strafePS = calibrateStrafe();
+  rotatePS = calibrateRotate();
 
-  moveWithTime(pi/2, 1, 0, 0.5/forwardMPS)
+  moveWithTime(pi/2, 1, 0, 0.5/normalPS);
 
   // navToSite();
 
