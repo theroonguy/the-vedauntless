@@ -34,6 +34,7 @@ void moveUntilBlocked(float minDist, float power) {
     move(pi / 2, power, 0);
     dist = getDistance();
   }
+  move(0, 0, 0);
 }
 
 void maintainDist(float dist) {

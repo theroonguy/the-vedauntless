@@ -70,6 +70,10 @@ void initPot() {
 
 void initServo() {
   servo.attach(2);
+  servo.write(180); //reset
+  // servo.detach();
+  // delay(1000); //let fall
+  // servo.attach(2);
 }
 
 void detectAnomaly() {

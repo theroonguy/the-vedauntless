@@ -26,12 +26,27 @@ void setup() {
   initColorSensor();
   initDistSensor();
   initPot();
-  //initServo();
+  initServo();
 
-  int interval = 2000;
-  int time = 1000;
+  moveUntilBlocked(150, 0.5);
 
-  // CALIBRATE
+  servo.write(150);
+  delay(500);
+  servo.write(120);
+  delay(500);
+  servo.write(90);
+  delay(500);
+  servo.write(60);
+  delay(500);
+  servo.detach();
+  delay(1000);
+  Enes100.println(readPot());
+
+
+  // int interval = 2000;
+  // int time = 1000;
+
+  // // CALIBRATE
   // float multiplier = 1.25;
   // normalPS = calibrateNormal(time, interval) / multiplier;
   // strafePS = calibrateStrafe(time, interval) / multiplier;
