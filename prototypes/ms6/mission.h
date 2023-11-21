@@ -1,3 +1,4 @@
+// NAVIGATION
 void navToSite() {
   bool atMission = false;
   float x, y, t;
@@ -18,16 +19,18 @@ void navToSite() {
     }
   }
 
-  // move to mission in increments of 500 ms of movement
-  while (atMission == false) {
-    moveWithTime(pi / 2, 1, 0, 500);  // move forward for 500 ms
-    if (getDistance() < 150) {
-      atMission = true;  // if at mission, then stop
-    }
-  }
+  // move to 125mm from mission
+  maintainDist(125)
+
+    // detect height
+    float height = detectHeight(150);
+
+  // detect if side is anomaly... eventually we will do something with this
+  isAtAnomaly();
 }
 
 void moveUntilBlocked(float minDist, float power) {
+  // in mm
 
   float dist = getDistance();
   while (dist > minDist) {
@@ -44,6 +47,9 @@ void maintainDist(float dist) {
 }
 
 void turnToFace(float timerange, float error) {
+  // timerange: strafe movement duration
+  // error: mm of error allowed
+
   bool parallel = false;
 
   while (parallel == false) {
@@ -64,6 +70,7 @@ void turnToFace(float timerange, float error) {
   }
 }
 
+// CRASH SITE
 int detectHeight(float distance) {
   moveUntilBlocked(distance, 0.5);
 
@@ -92,4 +99,32 @@ int detectHeight(float distance) {
   delay(1000);
 
   return angle;
+}
+
+int detectWidth(float error) {
+  // untested
+
+  turnToFace(500, 10);    // turn so movement will be parallel to the face
+
+  float startDist = getDistance();
+  float currentDist = getDistance();
+
+  while (abs(currentDist - startDist) < error) {      // strafe to the left until distance sensor reads a spike in readings -- the edge has been reached
+    move(pi, 0.5, 0);   // strafe to the left
+    currentDist = getDistance();
+  }
+
+  moveWithTime(0, 0.5, 0, 100);     // move back into range of wall
+  delay(500);
+
+  float startTime = millis(); // record starting time
+  while (abs(currentDist - startDist) < error) {      // strafe to the right until distance sensor reads a spike in readings -- the edge has been reached
+    move(0, 0.5, 0);   // strafe to the left
+    currentDist = getDistance();
+  }
+  float endTime = millis();   // record ending time
+
+  float deltaTime = endTime - startTime;
+
+  return deltaTime * (strafePS/2);
 }

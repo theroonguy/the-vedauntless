@@ -14,11 +14,11 @@ void setup() {
   if (wifiModuleConnected) {
     Enes100.begin("The Vedauntless", CRASH_SITE, 205, 50, 51);
     Enes100.println("Connected...");
-  }
 
-  // CALIBRATE SPEEDS
-  if (calibrateAtStart) {
-    calibrate(2000, 1000, 1.25);
+    // CALIBRATE SPEEDS -- only if wifi is enabled
+    if (calibrateAtStart) {
+      calibrate(2000, 1000, 1.25);
+    }
   }
 
   // INIT SENSORS
@@ -56,7 +56,7 @@ void loop() {
   //   delay(15);
   //   Serial.println(readPot());
   // }
-  
+
   // int val = getDistance();
   // Serial.println(val);
   // detectAnomaly();

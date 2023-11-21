@@ -1,31 +1,13 @@
-// pot: analog0
-// servo: digital2
-
+// COLOR SENSOR
 #define S0 45
 #define S1 43
 #define S2 41
 #define S3 39
 #define sensorOut 37
-
-int potentiometer = A10;
-
-#include <Servo.h>
-Servo servo;
-
 int frequency = 0;
 int R = 0;
 int G = 0;
 int B = 0;
-
-//Distance sensor
-#include "Seeed_vl53l0x.h"
-Seeed_vl53l0x VL53L0X;
-
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-#define SERIAL SerialUSB
-#else
-#define SERIAL Serial
-#endif
 
 void initColorSensor() {
   Serial.println("Initializing sensors...");
@@ -41,39 +23,6 @@ void initColorSensor() {
   digitalWrite(S1, LOW);
 
   Serial.println("Color sensors set up.");
-}
-
-void initDistSensor() {
-  //Distance setup
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-  Status = VL53L0X.VL53L0X_common_init();
-  if (VL53L0X_ERROR_NONE != Status) {
-    SERIAL.println("start vl53l0x mesurement failed!");
-    VL53L0X.print_pal_error(Status);
-    while (1)
-      ;
-  }
-
-  VL53L0X.VL53L0X_long_distance_ranging_init();
-
-  if (VL53L0X_ERROR_NONE != Status) {
-    SERIAL.println("start vl53l0x mesurement failed!");
-    VL53L0X.print_pal_error(Status);
-    while (1)
-      ;
-  }
-}
-
-void initPot() {
-  pinMode(potentiometer, INPUT);
-}
-
-void initServo() {
-  servo.attach(2);
-  servo.write(180); //reset
-  // servo.detach();
-  // delay(1000); //let fall
-  // servo.attach(2);
 }
 
 void detectAnomaly() {
@@ -103,6 +52,66 @@ void detectAnomaly() {
   }
 }
 
+int getColor(int color) {
+  // 0 for red, 1 for green, 2 for blue
+
+  if (color == 0) {  //Red
+    digitalWrite(S2, LOW);
+    digitalWrite(S3, LOW);
+  } else if (color == 1) {  //Green
+    digitalWrite(S2, HIGH);
+    digitalWrite(S3, HIGH);
+  } else {  //Blue
+    digitalWrite(S2, LOW);
+    digitalWrite(S3, HIGH);
+  }
+
+  return pulseIn(sensorOut, LOW);
+}
+
+bool isAtAnomaly() {
+  int R = getColor(0);
+  int G = getColor(1);
+  int B = getColor(2);
+
+  if (G - R > 40 && B - R > 50) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+// DISTANCE SENSOR
+#include "Seeed_vl53l0x.h"
+Seeed_vl53l0x VL53L0X;
+
+#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
+#define SERIAL SerialUSB
+#else
+#define SERIAL Serial
+#endif
+
+void initDistSensor() {
+  //Distance setup
+  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+  Status = VL53L0X.VL53L0X_common_init();
+  if (VL53L0X_ERROR_NONE != Status) {
+    SERIAL.println("start vl53l0x mesurement failed!");
+    VL53L0X.print_pal_error(Status);
+    while (1)
+      ;
+  }
+
+  VL53L0X.VL53L0X_long_distance_ranging_init();
+
+  if (VL53L0X_ERROR_NONE != Status) {
+    SERIAL.println("start vl53l0x mesurement failed!");
+    VL53L0X.print_pal_error(Status);
+    while (1)
+      ;
+  }
+}
+
 void findDistance() {
   VL53L0X_RangingMeasurementData_t RangingMeasurementData;
   VL53L0X_Error Status = VL53L0X_ERROR_NONE;
@@ -122,25 +131,27 @@ float getDistance() {
   return RangingMeasurementData.RangeMilliMeter;
 }
 
-int getColor(int color) {
-  // 0 for red, 1 for green, 2 for blue
+// POTENTIOMETER
+int potentiometer = A10;
 
-  if (color == 0) {  //Red
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, LOW);
-  } else if (color == 1) {  //Green
-    digitalWrite(S2, HIGH);
-    digitalWrite(S3, HIGH);
-  } else {  //Blue
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, HIGH);
-  }
-
-  return pulseIn(sensorOut, LOW);
+void initPot() {
+  pinMode(potentiometer, INPUT);
 }
 
 float readPot() {
   int sensor_value = analogRead(potentiometer);    //Read the value from the potentiometer connected to the A0 pin
   int value = map(sensor_value, 0, 1023, 0, 100);  //Map the value from 0, 1023 to 0, 100
   return value;
+}
+
+// SERVO -- PIN D2
+#include <Servo.h>
+Servo servo;
+
+void initServo() {
+  servo.attach(2);
+  servo.write(180);  //reset
+  // servo.detach();
+  // delay(1000); //let fall
+  // servo.attach(2);
 }

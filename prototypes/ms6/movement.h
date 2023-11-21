@@ -1,5 +1,4 @@
 #include <AFMotor.h>
-
 #define abs(x) ((x) > 0 ? (x) : -(x))
 
 AF_DCMotor motor1(1);  //Front left wheel
@@ -12,27 +11,39 @@ unsigned long startTime = 0;
 unsigned long moveTimer = 0;
 
 float pi = 3.1415926;
+
 float timeFor90 = 6700 / 4;  // time it takes to rotate 90 degrees/ pi/2 rads
 float timeFor2pi = 6700 - 1800;
-float velX = 0.190;
-float velY = 0.183;
-
-float normalPS = 0;
-float strafePS = 0;
+float strafePS = 0.190;
+float normalPS = 0.183;
 float rotatePS = 0;
 
+// CALCULATIONS
 float timeFromX(float meters) {
-  return meters / velX;
+  return meters / strafePS;
 }
 
 float timeFromY(float meters) {
-  return meters / velY * 1000;
+  return meters / normalPS * 1000;
 }
 
 float timeForAngle(float theta) {
   return theta * timeFor2pi / (2 * pi);
 }
 
+float convertVisionTo2pi(float theta) {
+  float thetaFinal = 0;
+
+  if (theta <= pi && theta >= 0) {
+    thetaFinal = theta;
+  } else if (theta < 0 && theta >= -pi) {
+    thetaFinal = 2 * pi + theta;
+  }
+
+  return thetaFinal;
+}
+
+// MOVE FUNCTIONS
 void move(float theta, float power, float turn) {
   // define variables for calculations
   float sinV = sin(theta - pi / 4);
@@ -131,18 +142,6 @@ void moveXY(float X, float Y) {
   moveWithTime(theta, 1, 0, time);
 }
 
-float convertVisionTo2pi(float theta) {
-  float thetaFinal = 0;
-
-  if (theta <= pi && theta >= 0) {
-    thetaFinal = theta;
-  } else if (theta < 0 && theta >= -pi) {
-    thetaFinal = 2 * pi + theta;
-  }
-
-  return thetaFinal;
-}
-
 void turnToTheta(float thetaInitial, float thetaFinal) {
   int turn = 0;
 
@@ -160,6 +159,7 @@ void signal() {
   moveWithTime(0, 0, -1, 100);
 }
 
+// CAILBRATION
 float calibrateNormal(int time, int delayTime) {
   float yInitial = Enes100.getY();  //Get initial location
   float xInitial = Enes100.getX();
