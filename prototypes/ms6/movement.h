@@ -12,23 +12,13 @@ unsigned long moveTimer = 0;
 
 float pi = 3.1415926;
 
-float timeFor90 = 6700 / 4;  // time it takes to rotate 90 degrees/ pi/2 rads
-float timeFor2pi = 6700 - 1800;
 float strafePS = 0.190;
 float normalPS = 0.183;
-float rotatePS = 0;
+float rotatePS = 0.937;
 
 // CALCULATIONS
-float timeFromX(float meters) {
-  return meters / strafePS;
-}
-
-float timeFromY(float meters) {
-  return meters / normalPS * 1000;
-}
-
 float timeForAngle(float theta) {
-  return theta * timeFor2pi / (2 * pi);
+  return theta / rotatePS;
 }
 
 float convertVisionTo2pi(float theta) {
@@ -130,16 +120,6 @@ void moveWithTime(float theta, float power, float turn, float mS) {
   // if ((millis() - moveTimer) > mS) {       // when timer has finished
   //   move(0, 0, 0);      // stop moving
   // }
-}
-
-void moveXY(float X, float Y) {
-
-  float theta = atan(Y / X);  // calculate angle
-  float timeX = timeFromX(X);
-  float timeY = timeFromY(Y);
-  float time = sqrt(sq(timeY) + sq(timeX));  // calculate total time
-
-  moveWithTime(theta, 1, 0, time);
 }
 
 void turnToTheta(float thetaInitial, float thetaFinal) {

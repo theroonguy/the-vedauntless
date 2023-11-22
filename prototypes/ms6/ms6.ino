@@ -7,6 +7,8 @@
 bool wifiModuleConnected = true;
 bool calibrateAtStart = false;
 
+int delayTime = 1000; // in ms
+
 void setup() {
   Serial.begin(9600);
 
@@ -27,14 +29,51 @@ void setup() {
   initPot();
   initServo();
 
-  int height = detectHeight(150);
-  Enes100.println(height);
+  // CALIBRATE PLANK
+  if (calibrateAtStart) {
+    calibratePlank(180, 60);
+  }
+  delay(delayTime);
+
+  // NAV TO SITE
+  navToSite(125); // within 125 mm
+  delay(delayTime);
+
+  // ANOMALY DETECTION
+  if (isAtAnomaly()) {
+    Enes100.mission(DIRECTION, NORMAL_Y);
+  } else {
+    Enes100.mission(DIRECTION, NORMAL_X);
+  }
+  delay(delayTime);
+
+  // HEIGHT MEASUREMENTS
+  int angle = detectHeight();  
+  Enes100.println(angle);
+  if (angle == 13) {
+    Enes100.mission(HEIGHT, 135);
+  } else if (angle == 19) {
+    Enes100.mission(HEIGHT, 180);
+  } else {
+    Enes100.mission(HEIGHT, 270);
+  }
+  delay(delayTime);
+
+  // LENGTH MEASUREMENTS
+  turnToFace(250, 10);  // turn so movement will be parallel to the face
+  int length = detectLength(10); // error of 10mm
+  if (length <= 150) {
+    Enes100.mission(LENGTH, 135);
+  } else if (length > 150 && length <= 245) {
+    Enes100.mission(LENGTH, 180);
+  } else {
+    Enes100.mission(LENGTH, 270);
+  }
+  delay(delayTime);
 
   // moveWithTime(pi/2, 1, 0, (1/normalPS)*1000);    // drive a full meter
   // delay(10000);
   // moveWithTime(0, 0, 1, (2*pi)/(rotatePS)*1000);
-
-  // // navToSite();
 
   // moveWithTime(pi, 1, 0, 300);
 
@@ -43,23 +82,4 @@ void setup() {
 }
 
 void loop() {
-
-  // scan from 0 to 180 degrees
-  // for (angle = 10; angle < 180; angle++) {
-  //   servo.write(angle);
-  //   delay(15);
-  //   Serial.println(readPot());
-  // }
-  // // now scan back from 180 to 0 degrees
-  // for (angle = 180; angle > 10; angle--) {
-  //   servo.write(angle);
-  //   delay(15);
-  //   Serial.println(readPot());
-  // }
-
-  // int val = getDistance();
-  // Serial.println(val);
-  // detectAnomaly();
-
-  // delay(300);
 }

@@ -1,5 +1,5 @@
 // NAVIGATION
-void navToSite() {
+void navToSite(float distance) {
   bool atMission = false;
   float x, y, t;
   bool v;  // Declare variables to hold the data
@@ -19,14 +19,8 @@ void navToSite() {
     }
   }
 
-  // move to 125mm from mission
-  maintainDist(125)
-
-    // detect height
-    float height = detectHeight(150);
-
-  // detect if side is anomaly... eventually we will do something with this
-  isAtAnomaly();
+  // move to certain distance away from crash site
+  moveUntilBlocked(distance, 0.5);
 }
 
 void moveUntilBlocked(float minDist, float power) {
@@ -71,60 +65,74 @@ void turnToFace(float timerange, float error) {
 }
 
 // CRASH SITE
-int detectHeight(float distance) {
-  moveUntilBlocked(distance, 0.5);
+int detectHeight() {
+  // servo.write(150);
+  // delay(500);
+  // servo.write(120);
+  // delay(500);
+  // servo.write(90);
+  // delay(500);
+  // servo.write(60);
+  // delay(500);
+  // servo.detach();
+  // delay(1000);
 
-  servo.write(150);
-  delay(500);
-  servo.write(120);
-  delay(500);
-  servo.write(90);
-  delay(500);
-  servo.write(60);
-  delay(500);
+  // int angle = readPot();
+
+  // servo.attach(2);
+  // servo.write(90);
+  // delay(500);
+  // servo.write(120);
+  // delay(500);
+  // servo.write(150);
+  // delay(500);
+  // servo.write(180);
+  // delay(500);
+  // servo.detach();
+  // delay(1000);
+
+  for (ang = 180; ang > 60; ang--) {
+    servo.write(ang);
+    delay(30);
+  }
   servo.detach();
   delay(1000);
+
   int angle = readPot();
 
   servo.attach(2);
-  servo.write(90);
-  delay(500);
-  servo.write(120);
-  delay(500);
-  servo.write(150);
-  delay(500);
-  servo.write(180);
-  delay(500);
+  for (ang = 60; ang < 180; ang++) {
+    servo.write(ang);
+    delay(30);
+  }
   servo.detach();
   delay(1000);
 
   return angle;
 }
 
-int detectWidth(float error) {
+int detectLength(float error) {
   // untested
-
-  turnToFace(500, 10);    // turn so movement will be parallel to the face
 
   float startDist = getDistance();
   float currentDist = getDistance();
 
-  while (abs(currentDist - startDist) < error) {      // strafe to the left until distance sensor reads a spike in readings -- the edge has been reached
-    move(pi, 0.5, 0);   // strafe to the left
+  while (abs(currentDist - startDist) < error) {  // strafe to the left until distance sensor reads a spike in readings -- the edge has been reached
+    move(pi, 0.5, 0);                             // strafe to the left
     currentDist = getDistance();
   }
 
-  moveWithTime(0, 0.5, 0, 100);     // move back into range of wall
+  moveWithTime(0, 0.5, 0, 100);  // move back into range of wall
   delay(500);
 
-  float startTime = millis(); // record starting time
-  while (abs(currentDist - startDist) < error) {      // strafe to the right until distance sensor reads a spike in readings -- the edge has been reached
-    move(0, 0.5, 0);   // strafe to the left
+  float startTime = millis();                     // record starting time
+  while (abs(currentDist - startDist) < error) {  // strafe to the right until distance sensor reads a spike in readings -- the edge has been reached
+    move(0, 0.5, 0);                              // strafe to the left
     currentDist = getDistance();
   }
-  float endTime = millis();   // record ending time
+  float endTime = millis();  // record ending time
 
   float deltaTime = endTime - startTime;
 
-  return deltaTime * (strafePS/2);
+  return deltaTime * (strafePS / 2);  // return estimate of mm of length
 }

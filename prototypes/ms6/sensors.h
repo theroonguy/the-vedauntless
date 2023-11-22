@@ -155,3 +155,37 @@ void initServo() {
   // delay(1000); //let fall
   // servo.attach(2);
 }
+
+// POT/SERVO FUNCTIONS
+int pot_max, pot_min, servo_max, servo_min;
+
+void calibratePlank(int servoMax, int servoMin) {  // untested
+
+  servo_max = servoMax;
+  servo_min = servoMin;
+
+  // find potentiometer values for servo's max to min range
+  servo.write(servoMax);  // starts in retracted angle
+  delay(100);
+  pot_max = readPot();
+  for (angle = servoMax; angle > servoMin; angle--) {  // move to min angle
+    servo.write(angle);
+    delay(30);
+  }
+  delay(100);
+  pot_min = readPot();
+  for (angle = servoMin; angle < servoMax; angle++) {  // move back to max angle
+    servo.write(angle);
+    delay(30);
+  }
+}
+
+int getServoAngle() {  // untested
+  // get percentage of pot angle based on stow_angle and extend_angle
+  int pot_current = readPot();
+  float percent = (pot_max - pot_current) / (pot_max - pot_min);
+
+  // translate to servo angle
+  int servo_current = percent * (servo_max - servo_min);
+  return servo_current;
+}
