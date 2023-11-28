@@ -168,16 +168,18 @@ void calibratePlank(int servoMax, int servoMin) {  // untested
   servo.write(servoMax);  // starts in retracted angle
   delay(100);
   pot_max = readPot();
-  for (angle = servoMax; angle > servoMin; angle--) {  // move to min angle
+  for (int angle = servoMax; angle > servoMin; angle--) {  // move to min angle
     servo.write(angle);
     delay(30);
   }
   delay(100);
   pot_min = readPot();
-  for (angle = servoMin; angle < servoMax; angle++) {  // move back to max angle
+  for (int angle = servoMin; angle < servoMax; angle++) {  // move back to max angle
     servo.write(angle);
     delay(30);
   }
+  servo.detach();
+  delay(1000);
 }
 
 int getServoAngle() {  // untested

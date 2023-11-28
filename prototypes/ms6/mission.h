@@ -1,4 +1,15 @@
 // NAVIGATION
+void moveUntilBlocked(float minDist, float power) {
+  // in mm
+
+  float dist = getDistance();
+  while (dist > minDist) {
+    move(pi / 2, power, 0);
+    dist = getDistance();
+  }
+  move(0, 0, 0);
+}
+
 void navToSite(float distance) {
   bool atMission = false;
   float x, y, t;
@@ -23,17 +34,6 @@ void navToSite(float distance) {
   moveUntilBlocked(distance, 0.5);
 }
 
-void moveUntilBlocked(float minDist, float power) {
-  // in mm
-
-  float dist = getDistance();
-  while (dist > minDist) {
-    move(pi / 2, power, 0);
-    dist = getDistance();
-  }
-  move(0, 0, 0);
-}
-
 void maintainDist(float dist) {
   moveUntilBlocked(dist, 1);              // move fast
   moveWithTime(3 * pi / 2, 0.5, 0, 500);  // back up
@@ -46,6 +46,8 @@ void turnToFace(float timerange, float error) {
 
   bool parallel = false;
 
+  moveWithTime(pi, 0.5, 0, timerange/2); //center
+
   while (parallel == false) {
     float dist = getDistance();
     moveWithTime(0, 0.5, 0, timerange);  // move in parallel
@@ -55,53 +57,38 @@ void turnToFace(float timerange, float error) {
       parallel = true;
     } else {
       moveWithTime(pi, 0.5, 0, timerange);
-      if ((newDist - dist) > 0) {
+      if ((newDist - dist) > 0) {   // rotate if not parallel
         moveWithTime(0, 0, -1, 100);
       } else {
         moveWithTime(0, 0, 1, 100);
       }
     }
   }
+
+  moveWithTime(pi, 0.5, 0, timerange/2); // recenter
+}
+
+void moveToOtherFace() {
+  moveWithTime(0, 1, 0, 500/strafePS);
+  moveWithTime(0, 0, -1, (pi/2)/(rotatePS/1000));
+  moveWithTime(0, 1, 0, 500/strafePS);
 }
 
 // CRASH SITE
-int detectHeight() {
-  // servo.write(150);
-  // delay(500);
-  // servo.write(120);
-  // delay(500);
-  // servo.write(90);
-  // delay(500);
-  // servo.write(60);
-  // delay(500);
-  // servo.detach();
-  // delay(1000);
+int detectHeight(int angModifier = 0) {
+  moveWithTime(pi, 0.5, 0, 500);
 
-  // int angle = readPot();
-
-  // servo.attach(2);
-  // servo.write(90);
-  // delay(500);
-  // servo.write(120);
-  // delay(500);
-  // servo.write(150);
-  // delay(500);
-  // servo.write(180);
-  // delay(500);
-  // servo.detach();
-  // delay(1000);
-
-  for (ang = 180; ang > 60; ang--) {
+  for (int ang = 180; ang > (60-angModifier); ang--) {
     servo.write(ang);
     delay(30);
   }
   servo.detach();
-  delay(1000);
+  delay(3000);
 
   int angle = readPot();
 
   servo.attach(2);
-  for (ang = 60; ang < 180; ang++) {
+  for (int ang = (60-angModifier); ang < 180; ang++) {
     servo.write(ang);
     delay(30);
   }
@@ -112,7 +99,6 @@ int detectHeight() {
 }
 
 int detectLength(float error) {
-  // untested
 
   float startDist = getDistance();
   float currentDist = getDistance();
@@ -122,17 +108,20 @@ int detectLength(float error) {
     currentDist = getDistance();
   }
 
-  moveWithTime(0, 0.5, 0, 100);  // move back into range of wall
-  delay(500);
+  moveWithTime(0, 0.5, 0, 200);  // move back into range of wall
+  currentDist = getDistance();
+  delay(1000);
 
   float startTime = millis();                     // record starting time
   while (abs(currentDist - startDist) < error) {  // strafe to the right until distance sensor reads a spike in readings -- the edge has been reached
-    move(0, 0.5, 0);                              // strafe to the left
+    move(0, 0.5, 0);                              // strafe to the right
     currentDist = getDistance();
   }
   float endTime = millis();  // record ending time
 
   float deltaTime = endTime - startTime;
+
+  moveWithTime(pi, 0.5, 0, 200);  // move back into range of wall
 
   return deltaTime * (strafePS / 2);  // return estimate of mm of length
 }

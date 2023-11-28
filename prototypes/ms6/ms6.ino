@@ -4,12 +4,15 @@
 #include "sensors.h"
 #include "mission.h"
 
-bool wifiModuleConnected = true;
+bool wifiModuleConnected = false;
+bool doNav = false;
 bool calibrateAtStart = false;
 
 int delayTime = 1000; // in ms
 
 void setup() {
+  delay(3000);
+
   Serial.begin(9600);
 
   // WIFI
@@ -32,44 +35,55 @@ void setup() {
   // CALIBRATE PLANK
   if (calibrateAtStart) {
     calibratePlank(180, 60);
+    delay(delayTime);
   }
-  delay(delayTime);
 
-  // NAV TO SITE
-  navToSite(125); // within 125 mm
-  delay(delayTime);
+  if (doNav) {
+    // NAV TO SITE
+    navToSite(125); // within 125 mm
+    delay(delayTime);
+  }
 
   // ANOMALY DETECTION
+  turnToFace(250, 10);  // turn so movement will be parallel to the face
   if (isAtAnomaly()) {
-    Enes100.mission(DIRECTION, NORMAL_Y);
+    //   Enes100.mission(DIRECTION, NORMAL_Y);
   } else {
-    Enes100.mission(DIRECTION, NORMAL_X);
+    //   Enes100.mission(DIRECTION, NORMAL_X);
+    delay(delayTime);
   }
-  delay(delayTime);
 
   // HEIGHT MEASUREMENTS
-  int angle = detectHeight();  
-  Enes100.println(angle);
-  if (angle == 13) {
-    Enes100.mission(HEIGHT, 135);
-  } else if (angle == 19) {
-    Enes100.mission(HEIGHT, 180);
-  } else {
-    Enes100.mission(HEIGHT, 270);
+  turnToFace(250, 10);  // turn so movement will be parallel to the face
+  servo.attach(2);
+  moveUntilBlocked(125, 0.5);
+  int angle = detectHeight(10);  
+  if (wifiModuleConnected) {
+    Enes100.println(angle);
+    if (angle == 13) {
+      Enes100.mission(HEIGHT, 135);
+    } else if (angle == 19) {
+      Enes100.mission(HEIGHT, 180);
+    } else {
+      Enes100.mission(HEIGHT, 270);
+    }
   }
   delay(delayTime);
 
   // LENGTH MEASUREMENTS
-  turnToFace(250, 10);  // turn so movement will be parallel to the face
-  int length = detectLength(10); // error of 10mm
+  int length = detectLength(100); // error distance
   if (length <= 150) {
-    Enes100.mission(LENGTH, 135);
+    if (wifiModuleConnected) {Enes100.mission(LENGTH, 135);}
+    moveWithTime(pi, 0.5, 0, 135/strafePS);
   } else if (length > 150 && length <= 245) {
-    Enes100.mission(LENGTH, 180);
+    if (wifiModuleConnected) {Enes100.mission(LENGTH, 180);}
+    moveWithTime(pi, 0.5, 0, 180/strafePS);
   } else {
-    Enes100.mission(LENGTH, 270);
+    if (wifiModuleConnected) {Enes100.mission(LENGTH, 270);}
+    moveWithTime(pi, 0.5, 0, 270/strafePS);
   }
   delay(delayTime);
+
 
   // moveWithTime(pi/2, 1, 0, (1/normalPS)*1000);    // drive a full meter
   // delay(10000);
