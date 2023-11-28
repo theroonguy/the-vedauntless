@@ -9,7 +9,7 @@
 
 // INPUTS
 bool doMission = true;
-int arucoID = 12;
+int arucoID = 217;
 
 void setup() {
 
@@ -29,7 +29,6 @@ void setup() {
 
     // NAVIGATE TO SITE
     navToSite(125); // navigate within 125 mm
-    delay(1000);
 
     // ANOMALY DETECTION
     if (isAtAnomaly()) {
@@ -47,16 +46,20 @@ void setup() {
     else if (length > 150 && length <= 245) { length = 180; } 
     else { length = 270; }
     Enes100.mission(LENGTH, length);
+    Enes100.print("Length: ");
+    Enes100.print(length);
     moveWithTime(pi, 0.5, 0, length/strafePS); // move to middle of face
 
     // HEIGHT MEASUREMENT
     servo.attach(2);
-    int angle = detectHeight(10);  
-    Enes100.println(angle);
-    if (angle == 13) { angle = 135; } 
-    else if (angle == 19) { angle = 180; } 
-    else { angle = 270; }
-    Enes100.mission(HEIGHT, angle);
+    int height = detectHeight(10);  
+    Enes100.println(height);
+    if (height == 13) { height = 135; } 
+    else if (height == 19) { height = 180; } 
+    else { height = 270; }
+    Enes100.mission(HEIGHT, height);
+    Enes100.print("Height: ");
+    Enes100.print(height);
 
     // OBSTACLE NAVIGATION
     bool midBlocked = false;
@@ -98,7 +101,6 @@ void setup() {
       alignY(1.5, error, 0);
       moveUntilBlocked(150, 1);
     } 
-    
     
   }
 }

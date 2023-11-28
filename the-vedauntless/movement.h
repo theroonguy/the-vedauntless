@@ -55,9 +55,9 @@ void move(float theta, float power, float turn) {
   }
 
   // multiply final values by 255 to get max speed
-  leftFront *= 255;
+  leftFront *= 235;
   rightFront *= 255;
-  leftRear *= 255;
+  leftRear *= 235;
   rightRear *= 255;
 
   // run motors at proper speeds
