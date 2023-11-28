@@ -4,20 +4,19 @@
 #include "sensors.h"
 #include "mission.h"
 
-bool wifiModuleConnected = false;
-bool doNav = false;
+bool wifiModuleConnected = true;
+bool doNav = true;
 bool calibrateAtStart = false;
 
 int delayTime = 1000; // in ms
 
 void setup() {
-  delay(3000);
 
   Serial.begin(9600);
 
   // WIFI
   if (wifiModuleConnected) {
-    Enes100.begin("The Vedauntless", CRASH_SITE, 205, 50, 51);
+    Enes100.begin("The Vedauntless", CRASH_SITE, 12, 50, 51);
     Enes100.println("Connected...");
 
     // CALIBRATE SPEEDS -- only if wifi is enabled
@@ -38,6 +37,9 @@ void setup() {
     delay(delayTime);
   }
 
+  delay(3000);
+
+
   if (doNav) {
     // NAV TO SITE
     navToSite(125); // within 125 mm
@@ -45,13 +47,13 @@ void setup() {
   }
 
   // ANOMALY DETECTION
-  turnToFace(250, 10);  // turn so movement will be parallel to the face
-  if (isAtAnomaly()) {
-    //   Enes100.mission(DIRECTION, NORMAL_Y);
-  } else {
-    //   Enes100.mission(DIRECTION, NORMAL_X);
-    delay(delayTime);
-  }
+  // turnToFace(250, 10);  // turn so movement will be parallel to the face
+  // if (isAtAnomaly()) {
+  //   //   Enes100.mission(DIRECTION, NORMAL_Y);
+  // } else {
+  //   //   Enes100.mission(DIRECTION, NORMAL_X);
+  //   delay(delayTime);
+  // }
 
   // HEIGHT MEASUREMENTS
   turnToFace(250, 10);  // turn so movement will be parallel to the face
@@ -83,6 +85,8 @@ void setup() {
     moveWithTime(pi, 0.5, 0, 270/strafePS);
   }
   delay(delayTime);
+
+  alignMiddle();
 
 
   // moveWithTime(pi/2, 1, 0, (1/normalPS)*1000);    // drive a full meter

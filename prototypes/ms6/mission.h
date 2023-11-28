@@ -21,12 +21,26 @@ void navToSite(float distance) {
   t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
   v = Enes100.isVisible();                     // Is your aruco visible? True or False.
 
+  Enes100.println(t);
+
+  // moveWithTime(0, 0, 1, 1000);
+
   // face the other side
   if (v) {
-    if (y <= 2) {
-      turnToTheta(t, pi / 2);
+    if (y <= 1) {
+      // turnToTheta(t, pi / 2);
+      while (t > (11*pi/20) || t < (9*pi/20)) {
+        t = convertVisionTo2pi(Enes100.getTheta());
+        move(0, 0, 0.5);
+      }
+      moveWithTime(0, 0, -0.5, (1.5*pi/12)*1000/rotatePS);
     } else {
-      turnToTheta(t, 3 * pi / 2);
+      // turnToTheta(t, 3 * pi / 2);
+      while (t > (31*pi/20) || t < (29*pi/20)) {
+        t = convertVisionTo2pi(Enes100.getTheta());
+        move(0, 0, 0.5);
+      }
+      moveWithTime(0, 0, -0.5, (1.5*pi/12)*1000/rotatePS);
     }
   }
 
@@ -72,6 +86,42 @@ void moveToOtherFace() {
   moveWithTime(0, 1, 0, 500/strafePS);
   moveWithTime(0, 0, -1, (pi/2)/(rotatePS/1000));
   moveWithTime(0, 1, 0, 500/strafePS);
+}
+
+void alignMiddle() {
+  float x, y, t;
+  bool v;  // Declare variables to hold the data
+
+  // detect which side of map we're on
+  x = Enes100.getX();                          // Your X coordinate! 0-4, in meters, -1 if no aruco is not visibility (but you should use Enes100.isVisible to check that instead)
+  y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
+  t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
+  v = Enes100.isVisible();                     // Is your aruco visible? True or False.
+
+  if (v) {
+    while (t > (39*pi/20) || t < (1*pi/20)) {
+      t = convertVisionTo2pi(Enes100.getTheta());
+      move(0, 0, 0.5);
+    }
+    moveWithTime(0, 0, -0.5, (1.5*pi/12)*1000/rotatePS);
+
+    moveWithTime(pi/2, 1, 0, 2000);
+
+    while (y > 1.1) {
+      y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
+      move(0, 0.5, 0);
+    }
+    while (y < 0.9) {
+      y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
+      move(pi, 0.5, 0);
+    }
+
+    while (t > (39*pi/20) || t < (1*pi/20)) {
+      t = convertVisionTo2pi(Enes100.getTheta());
+      move(0, 0, 0.5);
+    }
+    moveWithTime(0, 0, -0.5, (1.5*pi/12)*1000/rotatePS);
+  }
 }
 
 // CRASH SITE
