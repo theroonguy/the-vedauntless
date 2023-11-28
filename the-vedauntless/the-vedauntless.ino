@@ -33,10 +33,10 @@ void setup() {
 
     // ANOMALY DETECTION
     if (isAtAnomaly()) {
-      //   Enes100.mission(DIRECTION, NORMAL_Y);
+      Enes100.mission(DIRECTION, pi/2);
       Enes100.println("Normal Y");
     } else {
-      //   Enes100.mission(DIRECTION, NORMAL_X);
+      Enes100.mission(DIRECTION, 0);
       Enes100.println("Normal X");
     }
 
@@ -58,13 +58,49 @@ void setup() {
     else { angle = 270; }
     Enes100.mission(HEIGHT, angle);
 
-    // OBSTACLE AVOIDANCE
-    alignMiddle();
+    // OBSTACLE NAVIGATION
+    bool midBlocked = false;
+    bool topBlocked = false;
 
+    float xmid = 2.5;
+    float error = 0.1;
 
+    turnToTheta(0, pi/20);          // face towards obstacles
+    moveWithTime(pi/2, 1, 0, 2000); // move forwards a bit
+    alignY(1, error, 0);            // align to middle of field
+    turnToTheta(0, pi/20);          // reset orientation again 
+    alignX(1, error);               // move until in front of middle obstacle
+
+    if (getDistance() < 500) {      // if there is an obstacle there, know that there isn't one behind it
+      midBlocked = true;
+    }
+
+    turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
+    if (getDistance() < 1000) {
+      topBlocked = true;
+    }
+    turnToTheta(0, pi/20);          // turn back to straight
+    
+    if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
+      alignY(0.5, error, 0);
+      alignX(xmid, error);
+      alignY(1.5, error, 0);
+      moveUntilBlocked(150, 1);     // move through limbo
+    } else if (midBlocked && topBlocked == false) {   // go through top, then through middle, and then through limbo
+      alignY(1.5, error, 0);
+      alignX(xmid, error);
+      alignY(1, error, 0);
+      moveUntilBlocked(200, 1);
+      alignY(1.5, error, 0);
+      moveUntilBlocked(150, 1);
+    } else if (midBlocked == false && topBlocked) {   // go through middle, then through top
+      alignX(xmid, error);
+      alignY(1.5, error, 0);
+      moveUntilBlocked(150, 1);
+    } 
+    
+    
   }
-
-
 }
 
 void loop() {

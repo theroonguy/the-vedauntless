@@ -78,31 +78,31 @@ void moveToOtherFace() {
   moveWithTime(0, 1, 0, 500/strafePS);
 }
 
-void alignMiddle() {
-  float x, y, t;
-  bool v;  // Declare variables to hold the data
+void alignY(float yVal, float error, float dir) {
+  float y = Enes100.getY();                          
 
-  // detect which side of map we're on
-  x = Enes100.getX();                          // Your X coordinate! 0-4, in meters, -1 if no aruco is not visibility (but you should use Enes100.isVisible to check that instead)
-  y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
-  t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
-  v = Enes100.isVisible();                     // Is your aruco visible? True or False.
+  while (y > (yVal+error)) {
+    y = Enes100.getY();                          
+    move(0, 0.5, 0);
+  }
+  while (y < (yVal+error)) {
+    y = Enes100.getY();                          
+    move(pi, 0.5, 0);
+  }
 
-  if (v) {
-    turnToTheta(0, pi/20);
+  turnToTheta(dir, pi/20);    // ensure facing right direction after move
+}
 
-    moveWithTime(pi/2, 1, 0, 2000);
+void alignX(float xVal, float error) {
+  float x = Enes100.getX();                          
 
-    while (y > 1.1) {
-      y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
-      move(0, 0.5, 0);
-    }
-    while (y < 0.9) {
-      y = Enes100.getY();                          // Your Y coordinate! 0-2, in meters, also -1 if your aruco is not visible.
-      move(pi, 0.5, 0);
-    }
-
-    turnToTheta(0, pi/20);
+  while (x > (xVal+error)) {
+    x = Enes100.getX();                          
+    move(3*pi/2, 0.5, 0);
+  }
+  while (x < (xVal+error)) {
+    x = Enes100.getX();                          
+    move(pi/2, 0.5, 0);
   }
 }
 

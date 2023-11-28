@@ -123,12 +123,17 @@ void moveWithTime(float theta, float power, float turn, float mS) {
 }
 
 void turnToTheta(float theta, float error) {
-  float t;
-  while (t > (theta-error) || t < (theta+error)) {
+  float t = convertVisionTo2pi(Enes100.getTheta());
+  bool overcorrect = true;
+  float dir = 0.5;
+
+  if (t > (theta-error) || t < (theta+error)) { overcorrect = false; }    // if already aligned, then don't overcorrect
+  if (t < theta) { dir = -0.5 }                                           // optimize rotation
+  while (t > (theta+error) || t < (theta-error)) {                        // if not aligned, rotate until aligned
     t = convertVisionTo2pi(Enes100.getTheta());
-    move(0, 0, 0.5);
+    move(0, 0, dir);
   }
-  moveWithTime(0, 0, -0.5, (1.5*error)*1000/rotatePS);
+  if (overcorrect) { moveWithTime(0, 0, -dir, (1.5*error)*1000/rotatePS); } // overcorrect if needed
 }
 
 void signal() {
