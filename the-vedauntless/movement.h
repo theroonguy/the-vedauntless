@@ -127,8 +127,8 @@ void turnToTheta(float theta, float error) {
   bool overcorrect = true;
   float dir = 0.5;
 
-  if (t > (theta-error) || t < (theta+error)) { overcorrect = false; }    // if already aligned, then don't overcorrect
-  if (t < theta) { dir = -0.5 }                                           // optimize rotation
+  // if (t > (theta-error) || t < (theta+error)) { overcorrect = false; }    // if already aligned, then don't overcorrect
+  if (t < theta) { dir = -0.5; }                                           // optimize rotation
   while (t > (theta+error) || t < (theta-error)) {                        // if not aligned, rotate until aligned
     t = convertVisionTo2pi(Enes100.getTheta());
     move(0, 0, dir);
