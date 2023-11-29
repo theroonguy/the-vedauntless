@@ -28,40 +28,39 @@ void setup() {
     initServo();
 
     // NAVIGATE TO SITE
+    Enes100.println("Navigating to Crash Site...");
     navToSite(125); // navigate within 125 mm
 
     // ANOMALY DETECTION
     if (isAtAnomaly()) {
       Enes100.mission(DIRECTION, pi/2);
-      Enes100.println("Normal Y");
     } else {
       Enes100.mission(DIRECTION, 0);
-      Enes100.println("Normal X");
     }
 
     // LENGTH MEASUREMENT
+    Enes100.println("Detecting Length...");
     turnToFace(250, 10);  // turn so movement will be parallel to the face
     int length = detectLength(100); // error distance
     if (length <= 150) { length = 135; } 
     else if (length > 150 && length <= 245) { length = 180; } 
     else { length = 270; }
     Enes100.mission(LENGTH, length);
-    Enes100.print("Length: ");
-    Enes100.print(length);
     moveWithTime(pi, 0.5, 0, length/strafePS); // move to middle of face
 
     // HEIGHT MEASUREMENT
+    Enes100.println("Detecting Height...");
     servo.attach(2);
     int height = detectHeight(10);  
-    Enes100.println(height);
     if (height == 13) { height = 135; } 
     else if (height == 19) { height = 180; } 
     else { height = 270; }
     Enes100.mission(HEIGHT, height);
-    Enes100.print("Height: ");
-    Enes100.print(height);
+
+    delay(2000);
 
     // OBSTACLE NAVIGATION
+    Enes100.println("Navigating Obstacles...");
     bool midBlocked = false;
     bool topBlocked = false;
 
@@ -74,16 +73,27 @@ void setup() {
     turnToTheta(0, pi/20);          // reset orientation again 
     alignX(1, error);               // move until in front of middle obstacle
 
+    delay(2000);
+
     if (getDistance() < 500) {      // if there is an obstacle there, know that there isn't one behind it
       midBlocked = true;
-    }
+      signal();
+      Enes100.println("Middle path is blocked.");
+    } else { Enes100.println("Middle path is open."); }
+
+    delay(2000);
 
     turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
     if (getDistance() < 1000) {
       topBlocked = true;
-    }
+      signal();
+      Enes100.println("Top path is blocked.");
+    } else { Enes100.println("Top path is open."); }
+
+    delay(2000);
+
     turnToTheta(0, pi/20);          // turn back to straight
-    
+
     if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
       alignY(0.5, error, 0);
       alignX(xmid, error);
