@@ -9,17 +9,21 @@
 
 // INPUTS
 bool doMission = true;
-int arucoID = 217;
+int arucoID = 214;
 
 void setup() {
 
   // Intialize serial port
   Serial.begin(9600);
 
+  initMagnet();
+
   if (doMission) {
     // WIFI
-    Enes100.begin("The Vedauntless", CRASH_SITE, arucoID, 50, 51);
+    Enes100.begin("The Vedauntless", CRASH_SITE, arucoID, 51, 50);
     Enes100.println("Connected...");
+
+    signal();
 
     // INIT SENSORS
     initColorSensor();
@@ -27,21 +31,30 @@ void setup() {
     initPot();
     initServo();
 
+    delay(5000);
+
     // NAVIGATE TO SITE
     Enes100.println("Navigating to Crash Site...");
     navToSite(125); // navigate within 125 mm
 
     // ANOMALY DETECTION
-    if (isAtAnomaly()) {
+    if (detectAnomaly()) {
       Enes100.mission(DIRECTION, pi/2);
+      digitalWrite(52, LOW);
     } else {
       Enes100.mission(DIRECTION, 0);
+      moveWithTime(0, 0, 1, (pi/2)*2000/rotatePS);
+      digitalWrite(52, LOW);
+      moveWithTime(0, 0, -1, (pi/2)*2000/rotatePS);      
     }
 
     // LENGTH MEASUREMENT
     Enes100.println("Detecting Length...");
     turnToFace(250, 10);  // turn so movement will be parallel to the face
     int length = detectLength(100); // error distance
+    Enes100.print("LENGTH: ");
+    Enes100.print(length);
+    Enes100.println("");
     if (length <= 150) { length = 135; } 
     else if (length > 150 && length <= 245) { length = 180; } 
     else { length = 270; }
@@ -51,9 +64,10 @@ void setup() {
     // HEIGHT MEASUREMENT
     Enes100.println("Detecting Height...");
     servo.attach(2);
-    int height = detectHeight(10);  
+    int height = detectHeight(10); 
+    Enes100.println(height); 
     if (height == 13) { height = 135; } 
-    else if (height == 19) { height = 180; } 
+    else if (height == 14) { height = 180; } 
     else { height = 270; }
     Enes100.mission(HEIGHT, height);
 
@@ -64,35 +78,37 @@ void setup() {
     bool midBlocked = false;
     bool topBlocked = false;
 
-    float xmid = 2.5;
+    float xmid = 1.96;
     float error = 0.1;
 
     turnToTheta(0, pi/20);          // face towards obstacles
-    moveWithTime(pi/2, 1, 0, 2000); // move forwards a bit
     alignY(1, error, 0);            // align to middle of field
-    turnToTheta(0, pi/20);          // reset orientation again 
-    alignX(1, error);               // move until in front of middle obstacle
+    alignX(1, error);
+    // turnToTheta(0, pi/20);          // reset orientation again 
 
-    delay(2000);
+    delay(4000);
+
+    turnToTheta(0, pi/20);
+    alignY(1, error, 0);
+    alignX(1, error);
 
     if (getDistance() < 500) {      // if there is an obstacle there, know that there isn't one behind it
       midBlocked = true;
-      signal();
       Enes100.println("Middle path is blocked.");
     } else { Enes100.println("Middle path is open."); }
 
-    delay(2000);
+    delay(4000);
 
     turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
     if (getDistance() < 1000) {
       topBlocked = true;
-      signal();
       Enes100.println("Top path is blocked.");
     } else { Enes100.println("Top path is open."); }
 
-    delay(2000);
+    delay(4000);
 
     turnToTheta(0, pi/20);          // turn back to straight
+    alignY(1, error, 0);
 
     if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
       alignY(0.5, error, 0);
@@ -107,7 +123,8 @@ void setup() {
       alignY(1.5, error, 0);
       moveUntilBlocked(150, 1);
     } else if (midBlocked == false && topBlocked) {   // go through middle, then through top
-      alignX(xmid, error);
+      // alignX(xmid, error);
+      moveUntilBlocked(150, 0.5);
       alignY(1.5, error, 0);
       moveUntilBlocked(150, 1);
     } 
@@ -116,4 +133,5 @@ void setup() {
 }
 
 void loop() {
+
 }

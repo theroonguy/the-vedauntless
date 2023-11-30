@@ -133,7 +133,7 @@ void turnToTheta(float theta, float error) {
     t = convertVisionTo2pi(Enes100.getTheta());
     move(0, 0, dir);
   }
-  if (overcorrect) { moveWithTime(0, 0, -dir, (1.5*error)*1000/rotatePS); } // overcorrect if needed
+  if (overcorrect) { moveWithTime(0, 0, -dir, (2*error)*1000/rotatePS); } // overcorrect if needed
 }
 
 void signal() {

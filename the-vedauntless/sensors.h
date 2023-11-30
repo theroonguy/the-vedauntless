@@ -25,7 +25,7 @@ void initColorSensor() {
   Serial.println("Color sensors set up.");
 }
 
-void detectAnomaly() {
+bool detectAnomaly() {
   //Red
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
@@ -44,11 +44,16 @@ void detectAnomaly() {
   B = pulseIn(sensorOut, LOW);
   delay(100);
 
+  Serial.println(R);
+  Serial.println(G);
+  Serial.println(B);
   //Print results
   if (G - R > 40 && B - R > 50) {
     Serial.print("You ARE at the anomaly!\n");
+    return true;
   } else {
     Serial.print("You are NOT at the anomaly!\n");
+    return false;
   }
 }
 
@@ -74,11 +79,20 @@ bool isAtAnomaly() {
   int G = getColor(1);
   int B = getColor(2);
 
-  if (G - R > 40 && B - R > 50) {
+  // if (G - R > 40 && B - R > 50) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
+
+  Serial.println(R);
+  Serial.println(G);
+  Serial.println(B);
+
+  if (R > 70) {
     return true;
-  } else {
-    return false;
-  }
+  } else { return false; }
+
 }
 
 // DISTANCE SENSOR
@@ -190,4 +204,10 @@ int getServoAngle() {  // untested
   // translate to servo angle
   int servo_current = percent * (servo_max - servo_min);
   return servo_current;
+}
+
+// ELECTROMAGNET
+void initMagnet() {
+  pinMode(52, OUTPUT);
+  digitalWrite(52, HIGH);
 }

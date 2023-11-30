@@ -90,7 +90,7 @@ void alignY(float yVal, float error, float dir) {
     move(pi, 0.5, 0);
   }
 
-  turnToTheta(dir, pi/20);    // ensure facing right direction after move
+  // turnToTheta(dir, pi/20);    // ensure facing right direction after move
 }
 
 void alignX(float xVal, float error) {
@@ -155,5 +155,5 @@ int detectLength(float error) {
 
   moveWithTime(pi, 0.5, 0, 200);  // move back into range of wall
 
-  return deltaTime * (strafePS / 2);  // return estimate of mm of length
+  return (deltaTime * (strafePS / 2) - 70);  // return estimate of mm of length
 }
