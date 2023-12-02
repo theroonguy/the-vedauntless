@@ -9,7 +9,7 @@
 
 // INPUTS
 bool doMission = true;
-int arucoID = 214;
+int arucoID = 13;
 
 void setup() {
 
@@ -43,9 +43,9 @@ void setup() {
       digitalWrite(52, LOW);
     } else {
       Enes100.mission(DIRECTION, 0);
-      moveWithTime(0, 0, 1, (pi/2)*2000/rotatePS);
+      moveWithTime(0, 0, 0.5, (pi/2)*2000/rotatePS);
       digitalWrite(52, LOW);
-      moveWithTime(0, 0, -1, (pi/2)*2000/rotatePS);      
+      moveWithTime(0, 0, -0.5, (pi/2)*2000/rotatePS);      
     }
 
     // LENGTH MEASUREMENT
@@ -82,15 +82,19 @@ void setup() {
     float error = 0.1;
 
     turnToTheta(0, pi/20);          // face towards obstacles
+    delay(500);
     alignY(1, error, 0);            // align to middle of field
-    alignX(1, error);
+    delay(500);
+    turnToTheta(pi/4, pi/20);
+    delay(500);
+    turnToTheta(0, pi/20);
+    delay(500);
+    moveWithTime(pi/2, 0.5, 0, 3000);
+
+    // alignX(1, error);
     // turnToTheta(0, pi/20);          // reset orientation again 
 
-    delay(4000);
-
-    turnToTheta(0, pi/20);
-    alignY(1, error, 0);
-    alignX(1, error);
+    delay(2000);
 
     if (getDistance() < 500) {      // if there is an obstacle there, know that there isn't one behind it
       midBlocked = true;
@@ -99,34 +103,37 @@ void setup() {
 
     delay(4000);
 
-    turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
+    // turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
+    alignY(1.5, error, 0);
+
     if (getDistance() < 1000) {
       topBlocked = true;
       Enes100.println("Top path is blocked.");
     } else { Enes100.println("Top path is open."); }
 
-    delay(4000);
+    delay(1000);
 
-    turnToTheta(0, pi/20);          // turn back to straight
-    alignY(1, error, 0);
+    // turnToTheta(0, pi/20);          // turn back to straight
+    alignY(1.1, error, 0);
 
     if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
       alignY(0.5, error, 0);
-      alignX(xmid, error);
+      moveUntilBlocked(80, 0.5);
       alignY(1.5, error, 0);
       moveUntilBlocked(150, 1);     // move through limbo
     } else if (midBlocked && topBlocked == false) {   // go through top, then through middle, and then through limbo
       alignY(1.5, error, 0);
-      alignX(xmid, error);
+      moveUntilBlocked(80, 0.5);
       alignY(1, error, 0);
       moveUntilBlocked(200, 1);
       alignY(1.5, error, 0);
       moveUntilBlocked(150, 1);
     } else if (midBlocked == false && topBlocked) {   // go through middle, then through top
-      // alignX(xmid, error);
-      moveUntilBlocked(150, 0.5);
+      moveUntilBlocked(80, 0.5);
       alignY(1.5, error, 0);
-      moveUntilBlocked(150, 1);
+      turnToTheta(pi/4, pi/20);
+      turnToTheta(0, pi/20);
+      moveUntilBlocked(120, 0.5);
     } 
     
   }

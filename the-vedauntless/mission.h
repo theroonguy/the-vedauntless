@@ -81,13 +81,16 @@ void moveToOtherFace() {
 void alignY(float yVal, float error, float dir) {
   float y = Enes100.getY();                          
 
-  while (y > (yVal+error)) {
+  if (y > (yVal-error)){
+    while (y > (yVal-error)) {
     y = Enes100.getY();                          
     move(0, 0.5, 0);
-  }
-  while (y < (yVal+error)) {
-    y = Enes100.getY();                          
-    move(pi, 0.5, 0);
+  } 
+  } else if (y < (yVal+error)) {
+    while (y < (yVal+error)) {
+      y = Enes100.getY();                          
+      move(pi, 0.5, 0);
+    }
   }
 
   // turnToTheta(dir, pi/20);    // ensure facing right direction after move
