@@ -1,6 +1,6 @@
 // THE VEDAUNTLESS -- FINAL CODE
 
-float batteryLevel = 1.52;
+float batteryLevel = 1.40;
 
 // Import modules
 #include "Enes100.h"
@@ -86,7 +86,7 @@ void setup() {
       digitalWrite(52, LOW);
       sForward();
       moveWithTime(pi/2, 0.5, 0, 4000); 
-      turnToTheta(pi/4, pi/20);
+      //turnToTheta(pi/4, pi/20);
       turnToTheta(0, 0.1);
       alignY(1, 0.1, 0);
       move(0, 0, 0);
@@ -102,9 +102,9 @@ void setup() {
     float xmid = 1.96;
     float error = 0.1;
 
-    // turnToTheta(0, pi/20);          // face towards obstacles
-    // delay(500);
-    // sStrafe();
+    turnToTheta(0, pi/20);          // face towards obstacles
+    delay(500);
+    sStrafe();
     // alignY(1.25, error, 0);            // align to middle of field
     // delay(500);
     // turnToTheta(pi/4, pi/20);
@@ -115,53 +115,68 @@ void setup() {
     // alignX(1, error);
     // turnToTheta(0, pi/20);          // reset orientation again 
 
-    delay(2000);
+    // delay(2000);
 
-    if (getDistance() < 200) {      // if there is an obstacle there, know that there isn't one behind it
-      midBlocked = true;
-      Enes100.println("Middle path is blocked.");
-    } else { Enes100.println("Middle path is open."); }
+    // if (getDistance() < 300) {      // if there is an obstacle there, know that there isn't one behind it
+    //   midBlocked = true;
+    //   Enes100.println("Middle path is blocked.");
+    // } else { Enes100.println("Middle path is open."); }
 
-    delay(4000);
+    // delay(4000);
 
-    // turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
-    alignY(1.5, error, 0);
+    // // turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
+    // alignY(1.5, error, 0);
 
-    if (getDistance() < 200) {
-      topBlocked = true;
-      Enes100.println("Top path is blocked.");
-    } else { Enes100.println("Top path is open."); }
+    // if (getDistance() < 300) {
+    //   topBlocked = true;
+    //   Enes100.println("Top path is blocked.");
+    // } else { Enes100.println("Top path is open."); }
 
-    delay(1000);
+    // delay(1000);
 
     // turnToTheta(0, pi/20);          // turn back to straight
     alignY(1, error, 0);
 
-    if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
-      alignY(0.5, error, 0);
-      moveUntilBlocked(80, 0.5);
-      alignY(1.5, error, 0);
-      moveUntilBlocked(150, 1);     // move through limbo
-    } else if (midBlocked && topBlocked == false) {   // go through top, then through middle, and then through limbo
-      alignY(1.5, error, 0);
-      moveUntilBlocked(80, 0.5);
-      alignY(1, error, 0);
-      moveUntilBlocked(200, 1);
-      alignY(1.5, error, 0);
-      moveUntilBlocked(150, 1);
-    } else if (midBlocked == false && topBlocked) {   // go through middle, then through top
-      moveUntilBlocked(80, 0.5);
-      alignY(1.5, error, 0);
-      turnToTheta(pi/4, pi/20);
-      turnToTheta(0, pi/20);
+    // if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
+    //   alignY(0.5, error, 0);
+    //   moveUntilBlocked(80, 0.5);
+    //   alignY(1.5, error, 0);
+    //   moveUntilBlocked(150, 1);     // move through limbo
+    // } else if (midBlocked && topBlocked == false) {   // go through top, then through middle, and then through limbo
+    //   alignY(1.5, error, 0);
+    //   moveUntilBlocked(80, 0.5);
+    //   alignY(1, error, 0);
+    //   moveUntilBlocked(200, 1);
+    //   alignY(1.5, error, 0);
+    //   moveUntilBlocked(150, 1);
+    // } else if (midBlocked == false && topBlocked) {   // go through middle, then through top
+    //   moveUntilBlocked(80, 0.5);
+    //   alignY(1.5, error, 0);
+    //   turnToTheta(pi/4, pi/20);
+    //   turnToTheta(0, pi/20);
+    //   sForward();
+    //   moveWithTime(pi/2, 0.5, 0, 4000);
+    //   moveUntilBlocked(120, 0.5);
+    // }
+    if(Enes100.getY() > 1) {
+      alignY(.5, .05, 0);
+    }
+    else {
+      alignY(1.5, .05, 0);
+    }
+    while(Enes100.getX()<3.75) { //While before limbo
       sForward();
-      moveWithTime(pi/2, 0.5, 0, 4000);
-      moveUntilBlocked(120, 0.5);
-    } 
-    
+      moveUntilBlocked(125,0.5); //Move until hit block
+      Enes100.println("Distance: ");
+      Enes100.print(getDistance());
+      sStrafe();
+      findPath(error);
+      sForward();
+      Enes100.println("Realigning...");
+      turnToTheta(0, 0.1);
+    }     
   }
 }
 
 void loop() {
-
 }

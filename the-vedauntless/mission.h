@@ -179,3 +179,20 @@ int detectLength(float error) {
 
   return (deltaTime * (strafePS / 2) - 70);  // return estimate of mm of length
 }
+
+void findPath(float error) {
+  // float startDist = getDistance();
+  // float currentDist = getDistance();
+  if(Enes100.getY() < .75) { //If on lower path
+    while (getDistance() < 300 && Enes100.getY()<1.4) {
+      move(pi, 0.5, 0);
+    }
+    moveWithTime(pi, 0.5, 0, 2500);
+  }
+  else if(Enes100.getY() >=0.75){
+    while (getDistance() < 300 && Enes100.getY()>.4) {  //MAYBE SHOULD BE 5????
+      move(2*pi, 0.5, 0);
+    }
+      moveWithTime(2*pi, 0.5, 0, 2500);
+  }
+}
