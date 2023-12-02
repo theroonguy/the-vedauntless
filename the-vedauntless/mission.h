@@ -1,5 +1,6 @@
 // NAVIGATION
 void moveUntilBlocked(float minDist, float power) {
+  sForward();
   // in mm
 
   float dist = getDistance();
@@ -79,19 +80,37 @@ void moveToOtherFace() {
 }
 
 void alignY(float yVal, float error, float dir) {
-  float y = Enes100.getY();                          
+  sStrafe();
 
-  if (y > (yVal-error)){
-    while (y > (yVal-error)) {
-    y = Enes100.getY();                          
-    move(0, 0.5, 0);
-  } 
-  } else if (y < (yVal+error)) {
-    while (y < (yVal+error)) {
+  float y = Enes100.getY();  
+  // float overcorrect = 2000;                        
+
+  if ( y < (yVal-error) ) {     // if below the target y
+    while (y < (yVal-error)) {
       y = Enes100.getY();                          
       move(pi, 0.5, 0);
     }
+    // moveWithTime(0, 0.5, 0, overcorrect);
+  } else if ( y > (yVal+error) ) {  // if above target y
+    while (y > (yVal+error)) {
+      y = Enes100.getY();                          
+      move(0, 0.5, 0);
+    }
+    // moveWithTime(pi, 0.5, 0, overcorrect);
   }
+
+  // if (y > (yVal-error)){
+  //   while (y > (yVal-error)) {
+  //   y = Enes100.getY();                          
+  //   move(0, 0.5, 0);
+
+  // } 
+  // } else if (y < (yVal+error)) {
+  //   while (y < (yVal+error)) {
+  //     y = Enes100.getY();                          
+  //     move(pi, 0.5, 0);
+  //   }
+  // }
 
   // turnToTheta(dir, pi/20);    // ensure facing right direction after move
 }

@@ -16,6 +16,11 @@ float strafePS = 0.190;
 float normalPS = 0.183;
 float rotatePS = 0.937;
 
+float leftFrontMult = 1;
+float rightFrontMult = 1;
+float leftRearMult = 1;
+float rightRearMult = 1;
+
 // CALCULATIONS
 float timeForAngle(float theta) {
   return theta / rotatePS;
@@ -55,10 +60,10 @@ void move(float theta, float power, float turn) {
   }
 
   // multiply final values by 255 to get max speed
-  leftFront *= 235;
-  rightFront *= 255;
-  leftRear *= 235;
-  rightRear *= 255;
+  leftFront *= 255*leftFrontMult;
+  rightFront *= 255*rightFrontMult;
+  leftRear *= 255*leftRearMult;
+  rightRear *= 255*rightRearMult;
 
   // run motors at proper speeds
   motor1.setSpeed(abs(int(leftFront)));
@@ -133,12 +138,26 @@ void turnToTheta(float theta, float error) {
     t = convertVisionTo2pi(Enes100.getTheta());
     move(0, 0, dir);
   }
-  if (overcorrect) { moveWithTime(0, 0, -dir, (2*error)*1000/rotatePS); } // overcorrect if needed
+  if (overcorrect) { moveWithTime(0, 0, -dir, (2*error)*1000*batteryLevel/rotatePS); } // overcorrect if needed
 }
 
 void signal() {
   moveWithTime(0, 0, 1, 100);
   moveWithTime(0, 0, -1, 100);
+}
+
+void sForward() {
+  leftFrontMult = 0.84;
+  rightFrontMult = 1;
+  leftRearMult = 0.84;
+  rightRearMult = 1;
+}
+
+void sStrafe() {
+  leftFrontMult = 0.84;
+  rightFrontMult = 0.84;
+  leftRearMult = 1;
+  rightRearMult = 1;
 }
 
 // CAILBRATION

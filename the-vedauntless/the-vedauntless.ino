@@ -1,5 +1,7 @@
 // THE VEDAUNTLESS -- FINAL CODE
 
+float batteryLevel = 1.52;
+
 // Import modules
 #include "Enes100.h"
 #include "util.h"
@@ -16,7 +18,16 @@ void setup() {
   // Intialize serial port
   Serial.begin(9600);
 
+  // INIT SENSORS
+  initColorSensor();
+  initDistSensor();
+  initPot();
+  initServo();
   initMagnet();
+
+  while (getDistance() > 50) {
+    Serial.println("waiting for trigger...");
+  }
 
   if (doMission) {
     // WIFI
@@ -25,30 +36,15 @@ void setup() {
 
     signal();
 
-    // INIT SENSORS
-    initColorSensor();
-    initDistSensor();
-    initPot();
-    initServo();
-
-    delay(5000);
+    delay(1000);
 
     // NAVIGATE TO SITE
     Enes100.println("Navigating to Crash Site...");
-    navToSite(125); // navigate within 125 mm
-
-    // ANOMALY DETECTION
-    if (detectAnomaly()) {
-      Enes100.mission(DIRECTION, pi/2);
-      digitalWrite(52, LOW);
-    } else {
-      Enes100.mission(DIRECTION, 0);
-      moveWithTime(0, 0, 0.5, (pi/2)*2000/rotatePS);
-      digitalWrite(52, LOW);
-      moveWithTime(0, 0, -0.5, (pi/2)*2000/rotatePS);      
-    }
+    sForward();
+    navToSite(150); // navigate within 125 mm
 
     // LENGTH MEASUREMENT
+    sStrafe();
     Enes100.println("Detecting Length...");
     turnToFace(250, 10);  // turn so movement will be parallel to the face
     int length = detectLength(100); // error distance
@@ -66,10 +62,35 @@ void setup() {
     servo.attach(2);
     int height = detectHeight(10); 
     Enes100.println(height); 
-    if (height == 13) { height = 135; } 
-    else if (height == 14) { height = 180; } 
+    if (height < 16) { height = 135; } 
+    else if (height < 19 && height > 16) { height = 180; } 
     else { height = 270; }
     Enes100.mission(HEIGHT, height);
+    servo.detach();
+
+    // ANOMALY DETECTION
+    if (detectAnomaly()) {
+      Enes100.mission(DIRECTION, pi/2);
+      digitalWrite(52, LOW);
+      sForward();
+      moveWithTime(3*pi/2, 0.5, 0, 5000);
+      turnToTheta(0, pi/20);
+      sForward();
+      moveWithTime(pi/2, 0.5, 0, 4000);
+      alignY(1, 0.1, 0);            // align to middle of field
+
+    } else {
+      Enes100.mission(DIRECTION, 0);
+      // moveWithTime(0, 0, 0.5, (pi/2)*1500/rotatePS);
+      turnToTheta(0, pi/20);
+      digitalWrite(52, LOW);
+      sForward();
+      moveWithTime(pi/2, 0.5, 0, 4000); 
+      turnToTheta(pi/4, pi/20);
+      turnToTheta(0, 0.1);
+      alignY(1, 0.1, 0);
+      move(0, 0, 0);
+    }
 
     delay(2000);
 
@@ -81,22 +102,22 @@ void setup() {
     float xmid = 1.96;
     float error = 0.1;
 
-    turnToTheta(0, pi/20);          // face towards obstacles
-    delay(500);
-    alignY(1, error, 0);            // align to middle of field
-    delay(500);
-    turnToTheta(pi/4, pi/20);
-    delay(500);
-    turnToTheta(0, pi/20);
-    delay(500);
-    moveWithTime(pi/2, 0.5, 0, 3000);
+    // turnToTheta(0, pi/20);          // face towards obstacles
+    // delay(500);
+    // sStrafe();
+    // alignY(1.25, error, 0);            // align to middle of field
+    // delay(500);
+    // turnToTheta(pi/4, pi/20);
+    // delay(500);
+    // turnToTheta(0, pi/20);
+    // delay(500);
 
     // alignX(1, error);
     // turnToTheta(0, pi/20);          // reset orientation again 
 
     delay(2000);
 
-    if (getDistance() < 500) {      // if there is an obstacle there, know that there isn't one behind it
+    if (getDistance() < 200) {      // if there is an obstacle there, know that there isn't one behind it
       midBlocked = true;
       Enes100.println("Middle path is blocked.");
     } else { Enes100.println("Middle path is open."); }
@@ -106,7 +127,7 @@ void setup() {
     // turnToTheta(pi/4, pi/20);       // turn to check for topfront obstacle
     alignY(1.5, error, 0);
 
-    if (getDistance() < 1000) {
+    if (getDistance() < 200) {
       topBlocked = true;
       Enes100.println("Top path is blocked.");
     } else { Enes100.println("Top path is open."); }
@@ -114,7 +135,7 @@ void setup() {
     delay(1000);
 
     // turnToTheta(0, pi/20);          // turn back to straight
-    alignY(1.1, error, 0);
+    alignY(1, error, 0);
 
     if (midBlocked && topBlocked) {     // therefore, lower front is open and top back is open
       alignY(0.5, error, 0);
@@ -133,6 +154,8 @@ void setup() {
       alignY(1.5, error, 0);
       turnToTheta(pi/4, pi/20);
       turnToTheta(0, pi/20);
+      sForward();
+      moveWithTime(pi/2, 0.5, 0, 4000);
       moveUntilBlocked(120, 0.5);
     } 
     
