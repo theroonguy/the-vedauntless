@@ -1,7 +1,7 @@
 // THE VEDAUNTLESS -- FINAL CODE
 
-float batteryLevel = 1.65;  //Full battery ~1.7
-float speed = 1; //ALSO CHANGE SPEED IN findPath(); (mission.h)
+float batteryLevel = 1.5;  //Full battery ~1.7
+float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
 
 // Import modules
 #include "Enes100.h"
@@ -76,21 +76,26 @@ void setup() {
     // ANOMALY DETECTION & DIMENSION LOGIC
     if (detectAnomaly()) {
       Enes100.println("MISSION MESSAGE: The direction of the abnormality is in the +Y direction");
-      Enes100.mission(DIRECTION, pi / 2);
       digitalWrite(52, LOW);
       sForward();
-      moveWithTime(3 * pi / 2, speed, 0, 2500/speed);
+      moveWithTime(3 * pi / 2, speed, 0, 2500 / speed);
+      turnToTheta(pi / 4, pi / 20);
       turnToTheta(0, pi / 20);
+      delay(500);
       sForward();
-      moveWithTime(pi / 2, speed, 0, 2000/speed);
+      moveWithTime(pi / 2, speed, 0, 3000 / speed);
 
     } else {
       Enes100.mission(DIRECTION, 0);
       turnToTheta(0, pi / 20);
+      delay(500);
+      turnToTheta(0, pi / 20);
       digitalWrite(52, LOW);
       sForward();
-      moveWithTime(pi / 2, speed, 0, 2000/speed);
-      turnToTheta(0, 0.1);
+      moveWithTime(pi / 2, speed, 0, 3000 / speed);
+      turnToTheta(pi / 4, pi / 20);
+      turnToTheta(0, pi / 20);
+      delay(500);
       //logic
       length = anomalyLogic(height, length);
     }
@@ -107,37 +112,60 @@ void setup() {
 
     float xmid = 1.96;
     float error = 0.1;
-    float errorTurn = pi/10;
+    float errorTurn = pi / 10;
 
     turnToTheta(0, errorTurn);  // face towards obstacles
     delay(500);
-    sStrafe();
 
+    sStrafe();
     alignY(1, error, 0);
 
+    // align to either top or bottom
     if (Enes100.getY() > 1) {
       alignY(.5, .05, 0);
     } else {
       alignY(1.5, .05, 0);
     }
-    while (Enes100.getX() < 3.25) {  //While before limbo
+
+    // first set of obstacles
+    while (Enes100.getX() < 1.8) {  //While before second obstacles
       sForward();
-      moveUntilBlocked(125, speed);  //Move until hit block
-      if (Enes100.getX() < 3.25) {  //While before limbo
+      turnToTheta(pi / 4, pi / 20);
+      turnToTheta(0, pi / 20);
+      moveUntilBlocked(200, speed, 2);  //Move until hit block
+      sStrafe();
+      findPath(error);
+      sForward();
+      Enes100.println("Realigning...");
+    }
+
+    // after first set of obstacles
+    while (Enes100.getX() < 2.8) {  //While before limbo
+      turnToTheta(pi / 4, pi / 20);
+      turnToTheta(0, pi / 20);
+      sForward();
+      moveUntilBlocked(200, speed, 3);  //Move until hit block or reaches final x
+      if (Enes100.getX() < 2.8) {         //While before limbo
         sStrafe();
         findPath(error);
         sForward();
         Enes100.println("Realigning...");
-        turnToTheta(0, 0.1);
       }
     }
+
+    alignY(1.5, error, 0);
+    turnToTheta(pi / 4, pi / 20);
+    turnToTheta(0, pi / 20);
+
+    moveUntilBlocked(200, speed);
+
+    servo.attach(2);
+    for (int ang = 180; ang > (60); ang--) {
+      servo.write(ang);
+      delay(30);
+    }
+    servo.detach();
   }
-  servo.attach(2);
-  for (int ang = 180; ang > (60); ang--) {
-    servo.write(ang);
-    delay(30);
-  }
-  servo.detach();
 }
 
 void loop() {

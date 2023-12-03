@@ -1,10 +1,10 @@
 // NAVIGATION
-void moveUntilBlocked(float minDist, float power) {
+void moveUntilBlocked(float minDist, float power, float xVal = 4) {
   sForward();
   // in mm
 
   float dist = getDistance();
-  while (dist > minDist) {
+  while (dist > minDist && Enes100.getX() < xVal) {
     move(pi / 2, power, 0);
     dist = getDistance();
   }
@@ -22,8 +22,6 @@ void navToSite(float distance) {
   t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
   v = Enes100.isVisible();                     // Is your aruco visible? True or False.
 
-  Enes100.println(t);
-
   // moveWithTime(0, 0, 1, 1000);
 
   // face the other side
@@ -34,8 +32,8 @@ void navToSite(float distance) {
       turnToTheta(3 * pi / 2, pi / 20);
     }
   }
-  moveWithTime(pi/2, .5, 0, 3000);
-  turnToMission(3000, 200);
+  moveWithTime(pi / 2, .5, 0, 3500);
+  turnToMission(1500, 300);
 
   // move to certain distance away from crash site
   moveUntilBlocked(distance, 0.5);
@@ -90,13 +88,13 @@ void alignY(float yVal, float error, float dir) {
   if (y < (yVal - error)) {  // if below the target y
     while (y < (yVal - error)) {
       y = Enes100.getY();
-      move(pi, 0.5, 0);
+      move(pi, speed, 0);
     }
     // moveWithTime(0, 0.5, 0, overcorrect);
   } else if (y > (yVal + error)) {  // if above target y
     while (y > (yVal + error)) {
       y = Enes100.getY();
-      move(0, 0.5, 0);
+      move(0, speed, 0);
     }
     // moveWithTime(pi, 0.5, 0, overcorrect);
   }
@@ -188,35 +186,33 @@ int detectLength(float error) {
 
 void findPath(float error) {
   float speed = 1;
-  // float startDist = getDistance();
-  // float currentDist = getDistance();
-  // if (Enes100.getY() < .75) {  //If on lower path
-  //   while (getDistance() < 300 && Enes100.getY() < 1.4) {
-  //     move(pi, 0.5, 0);
-  //   }
-  //   moveWithTime(pi, 0.5, 0, 2500);
-  // } else if (Enes100.getY() >= 0.75) {
-  //   while (getDistance() < 300 && Enes100.getY() > .4) {  //MAYBE SHOULD BE 5????
-  //     move(2 * pi, 0.5, 0);
-  //   }
-  //   moveWithTime(2 * pi, 0.5, 0, 2500);
-  // }
 
   float startDist = getDistance();
   float currentDist = getDistance();
-  if (Enes100.getY() > 1.25) {  //If on upper path
-    while (getDistance() < 300 && Enes100.getY() > 1.4) {  //MAYBE SHOULD BE 5????
-      move(2 * pi, speed, 0);
+
+  if (Enes100.getY() > 1.25 && getDistance() < 300 && getDistance() > 100) {                             //If on upper path
+    while (getDistance() < 300 && Enes100.getY() > .4 && getDistance() > 100) {  //MAYBE SHOULD BE 5????
+      move(0, speed, 0);
     }
-    Enes100.println("temp");
-    moveWithTime(2 * pi, speed, 0, 1250/speed);
+    if ( Enes100.getY() > 0.5 ) {
+      moveWithTime(0, speed, 0, 2000 / speed);
+    }
+    delay(2000);
   }
-    else if (Enes100.getY() <= 1.25) {
-    while (getDistance() < 300 && Enes100.getY() < .4) {
+  if (Enes100.getY() <= 1.25 && getDistance() < 300 && getDistance() > 100) {
+    while (getDistance() < 300 && Enes100.getY() < 1.6 && getDistance() > 100) {
       move(pi, speed, 0);
     }
-    Enes100.println("temp2");
-    moveWithTime(pi, speed, 0, 1250/speed);
+    if ( Enes100.getY() < 1.5) {
+      moveWithTime(pi, speed, 0, 2000 / speed);
+    }
+    delay(2000);
+  }
+  if (getDistance() < 120) {                 // back up if too close
+    moveWithTime(3*pi/2, speed, 0, 400);
+    // turnToTheta(pi/4, 0.1);
+    // turnToTheta(0, 0.1);
+    turnToFace(250, 10);
   }
 }
 

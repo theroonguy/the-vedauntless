@@ -206,3 +206,7 @@ void calibrate(float time, float interval, float multiplier) {
   rotatePS = calibrateRotate(time, interval) / multiplier;
   Enes100.println(rotatePS);
 }
+
+void protectSensors(float power, float time) {
+  
+}
