@@ -1,12 +1,14 @@
 // THE VEDAUNTLESS -- FINAL CODE
 
 float batteryLevel = 1.65;  //Full battery ~1.7
+float speed = 1; //ALSO CHANGE SPEED IN findPath(); (mission.h)
 
 // Import modules
 #include "Enes100.h"
 #include "util.h"
 #include "movement.h"
 #include "sensors.h"
+#include "temp.h"
 #include "mission.h"
 
 // INPUTS
@@ -77,17 +79,17 @@ void setup() {
       Enes100.mission(DIRECTION, pi / 2);
       digitalWrite(52, LOW);
       sForward();
-      moveWithTime(3 * pi / 2, 0.5, 0, 5000);
+      moveWithTime(3 * pi / 2, speed, 0, 2500/speed);
       turnToTheta(0, pi / 20);
       sForward();
-      moveWithTime(pi / 2, 0.5, 0, 4000);
+      moveWithTime(pi / 2, speed, 0, 2000/speed);
 
     } else {
       Enes100.mission(DIRECTION, 0);
       turnToTheta(0, pi / 20);
       digitalWrite(52, LOW);
       sForward();
-      moveWithTime(pi / 2, 0.5, 0, 4000);
+      moveWithTime(pi / 2, speed, 0, 2000/speed);
       turnToTheta(0, 0.1);
       //logic
       length = anomalyLogic(height, length);
@@ -105,8 +107,9 @@ void setup() {
 
     float xmid = 1.96;
     float error = 0.1;
+    float errorTurn = pi/10;
 
-    turnToTheta(0, pi / 20);  // face towards obstacles
+    turnToTheta(0, errorTurn);  // face towards obstacles
     delay(500);
     sStrafe();
 
@@ -119,7 +122,7 @@ void setup() {
     }
     while (Enes100.getX() < 3.25) {  //While before limbo
       sForward();
-      moveUntilBlocked(125, 0.5);  //Move until hit block
+      moveUntilBlocked(125, speed);  //Move until hit block
       if (Enes100.getX() < 3.25) {  //While before limbo
         sStrafe();
         findPath(error);

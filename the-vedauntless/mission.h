@@ -34,6 +34,8 @@ void navToSite(float distance) {
       turnToTheta(3 * pi / 2, pi / 20);
     }
   }
+  moveWithTime(pi/2, .5, 0, 3000);
+  turnToMission(3000, 200);
 
   // move to certain distance away from crash site
   moveUntilBlocked(distance, 0.5);
@@ -185,6 +187,7 @@ int detectLength(float error) {
 }
 
 void findPath(float error) {
+  float speed = 1;
   // float startDist = getDistance();
   // float currentDist = getDistance();
   // if (Enes100.getY() < .75) {  //If on lower path
@@ -202,16 +205,18 @@ void findPath(float error) {
   float startDist = getDistance();
   float currentDist = getDistance();
   if (Enes100.getY() > 1.25) {  //If on upper path
-    while (getDistance() < 300 && Enes100.getY() > 1.6) {  //MAYBE SHOULD BE 5????
-      move(2 * pi, 0.5, 0);
+    while (getDistance() < 300 && Enes100.getY() > 1.4) {  //MAYBE SHOULD BE 5????
+      move(2 * pi, speed, 0);
     }
-    moveWithTime(2 * pi, 0.5, 0, 2500);
+    Enes100.println("temp");
+    moveWithTime(2 * pi, speed, 0, 1250/speed);
   }
     else if (Enes100.getY() <= 1.25) {
     while (getDistance() < 300 && Enes100.getY() < .4) {
-      move(pi, 0.5, 0);
+      move(pi, speed, 0);
     }
-    moveWithTime(pi, 0.5, 0, 2500);
+    Enes100.println("temp2");
+    moveWithTime(pi, speed, 0, 1250/speed);
   }
 }
 
