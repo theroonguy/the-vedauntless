@@ -10,7 +10,8 @@ bool turnToMission(float totalTime, float error) {
     move(0, 0, -0.5);
     dist = getDistance();
     if (abs(currentDist - dist) > error) {    // if catches edge
-      moveWithTime(0, 0, 0.5, 200);           // turn back to face
+      Enes100.println("Found while detecting left");
+      moveWithTime(0, 0, 0.5, 500);           // turn back to face
       return true;                            // and exit function
     } 
   }                                           // if fails to catch edge, then it was already turned past to begin with
@@ -21,7 +22,8 @@ bool turnToMission(float totalTime, float error) {
     move(0, 0, 0.5);
     dist = getDistance();
     if (abs(currentDist - dist) > error) {    // if catches edge
-      moveWithTime(0, 0, -0.5, 200);          // turn back to face
+      Enes100.println("Found while detecting right");
+      moveWithTime(0, 0, -0.5, 500);          // turn back to face
       return true;                            // and exit function
     } 
   }                                           // if fails to catch edge, then it was already turned past to begin with
