@@ -221,6 +221,7 @@ void navigateObstacles(float speed) {
 
     // if not detecting an obstacle anymore
     if (dist > strafeDist && clearedOb == false) {    // if we have cleared the edge of an obstacle
+      sStrafe();
       moveWithTime(dir, speed, 0, clearTime/speed);     // clear the obstacle
       delay(2000);
       clearedOb = true;                                 // note that there is no longer an obstacle ahead
@@ -228,6 +229,7 @@ void navigateObstacles(float speed) {
 
     // if cleared obstacle, then move forward
     if (clearedOb == true) {                          // if there is no obstacle ahead..
+      sForward();
       move(pi/2, speed, 0);                             // move forwards
     }
 
