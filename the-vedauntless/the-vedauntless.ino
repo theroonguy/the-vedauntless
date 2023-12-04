@@ -106,58 +106,60 @@ void setup() {
     delay(1000);
 
     // OBSTACLE NAVIGATION
-    Enes100.println("Navigating Obstacles...");
-    bool midBlocked = false;
-    bool topBlocked = false;
+    navigateObstacles(speed);
+    
+    // Enes100.println("Navigating Obstacles...");
+    // bool midBlocked = false;
+    // bool topBlocked = false;
 
-    float xmid = 1.96;
-    float error = 0.1;
-    float errorTurn = pi / 10;
+    // float xmid = 1.96;
+    // float error = 0.1;
+    // float errorTurn = pi / 10;
 
-    turnToTheta(0, errorTurn);  // face towards obstacles
-    delay(500);
+    // turnToTheta(0, errorTurn);  // face towards obstacles
+    // delay(500);
 
-    sStrafe();
-    alignY(1, error, 0);
+    // sStrafe();
+    // alignY(1, error, 0);
 
-    // align to either top or bottom
-    if (Enes100.getY() > 1) {
-      alignY(.5, .05, 0);
-    } else {
-      alignY(1.5, .05, 0);
-    }
+    // // align to either top or bottom
+    // if (Enes100.getY() > 1) {
+    //   alignY(.5, .05, 0);
+    // } else {
+    //   alignY(1.5, .05, 0);
+    // }
 
-    // first set of obstacles
-    while (Enes100.getX() < 1.8) {  //While before second obstacles
-      sForward();
-      turnToTheta(pi / 4, pi / 20);
-      turnToTheta(0, pi / 20);
-      moveUntilBlocked(200, speed, 2);  //Move until hit block
-      sStrafe();
-      findPath(error);
-      sForward();
-      Enes100.println("Realigning...");
-    }
+    // // first set of obstacles
+    // while (Enes100.getX() < 1.8) {  //While before second obstacles
+    //   sForward();
+    //   turnToTheta(pi / 4, pi / 20);
+    //   turnToTheta(0, pi / 20);
+    //   moveUntilBlocked(200, speed, 2);  //Move until hit block
+    //   sStrafe();
+    //   findPath(error);
+    //   sForward();
+    //   Enes100.println("Realigning...");
+    // }
 
-    // after first set of obstacles
-    while (Enes100.getX() < 2.8) {  //While before limbo
-      turnToTheta(pi / 4, pi / 20);
-      turnToTheta(0, pi / 20);
-      sForward();
-      moveUntilBlocked(200, speed, 3);  //Move until hit block or reaches final x
-      if (Enes100.getX() < 2.8) {         //While before limbo
-        sStrafe();
-        findPath(error);
-        sForward();
-        Enes100.println("Realigning...");
-      }
-    }
+    // // after first set of obstacles
+    // while (Enes100.getX() < 2.8) {  //While before limbo
+    //   turnToTheta(pi / 4, pi / 20);
+    //   turnToTheta(0, pi / 20);
+    //   sForward();
+    //   moveUntilBlocked(200, speed, 3);  //Move until hit block or reaches final x
+    //   if (Enes100.getX() < 2.8) {         //While before limbo
+    //     sStrafe();
+    //     findPath(error);
+    //     sForward();
+    //     Enes100.println("Realigning...");
+    //   }
+    // }
 
-    alignY(1.5, error, 0);
-    turnToTheta(pi / 4, pi / 20);
-    turnToTheta(0, pi / 20);
+    // alignY(1.5, error, 0);
+    // turnToTheta(pi / 4, pi / 20);
+    // turnToTheta(0, pi / 20);
 
-    moveUntilBlocked(200, speed);
+    // moveUntilBlocked(200, speed);
 
     servo.attach(2);
     for (int ang = 180; ang > (60); ang--) {

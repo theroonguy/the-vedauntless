@@ -160,53 +160,90 @@ void sStrafe() {
   rightRearMult = 1;
 }
 
-// CAILBRATION
-float calibrateNormal(int time, int delayTime) {
-  float yInitial = Enes100.getY();  //Get initial location
-  float xInitial = Enes100.getX();
-  moveWithTime(pi / 2, 1, 0, time);  //Move forward for two seconds
-  delay(delayTime);
-  float xFinal = Enes100.getX();  //Get final location
-  float yFinal = Enes100.getY();
-  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal) / (time / 1000);  //Calculate distance traveled
-  moveWithTime(pi / 2, -1, 0, time);                                                 ///Return to initial position
-  delay(delayTime);
-  return metersPerSecond;
-}
+// NAVIGATION
+void navigateObstacles(float speed) {
 
-float calibrateStrafe(int time, int delayTime) {
-  float yInitial = Enes100.getY();  //Get initial location
-  float xInitial = Enes100.getX();
-  moveWithTime(0, 1, 0, time);  //Move to the side for two seconds
-  delay(delayTime);
-  float xFinal = Enes100.getX();  //Get final location
-  float yFinal = Enes100.getY();
-  float metersPerSecond = norm(xInitial, yInitial, xFinal, yFinal) / (time / 1000);  //Calculate distance traveled
-  moveWithTime(0, -1, 0, time);
-  delay(delayTime);  //Return to initial position
-  return metersPerSecond;
-}
+  // nav settings    
+  int strafeDist = 300;       // (mm) distance to strafe
+  int tooClose = 100;         // (mm) distance to start backing up
+  int backUpTime = 400;       // (mS) duration of back up movement
+  int clearTime = 2000;       // (mS) time to clear an obstacle
+  int rotateTime = 100;       // (mS) duration of rotation correction
+  float yBoundary = 0.4;      // (m) boundary to not exceed from top and bottom
+  float xBoundary = 3.5;      // (m) end of course, when to stop navigating
+  float thetaRange = pi/12;   // (rad) allowed range of theta
 
-float calibrateRotate(int time, int delayTime) {
-  float thetaInitial = convertVisionTo2pi(Enes100.getTheta());  //Get initial angle
-  moveWithTime(0, 0, 1, time);                                  //Rotate for two seconds
-  delay(delayTime);
-  float thetaFinal = convertVisionTo2pi(Enes100.getTheta());                //Get final angle
-  float radiansPerSecond = abs(thetaFinal - thetaInitial) / (time / 1000);  //Calculate radians per second
-  moveWithTime(0, 0, -1, time);                                             //Return to initial position
-  delay(delayTime);
-  return radiansPerSecond;
-}
+  float dir = pi;    // direction of sideways movement -- either pi or 0
+  bool aligning = false;
+  bool clearedOb = false;
+  bool navigate = true;
 
-void calibrate(float time, float interval, float multiplier) {
-  normalPS = calibrateNormal(time, interval) / multiplier;
-  Enes100.println(normalPS);
-  strafePS = calibrateStrafe(time, interval) / multiplier;
-  Enes100.println(strafePS);
-  rotatePS = calibrateRotate(time, interval) / multiplier;
-  Enes100.println(rotatePS);
-}
+  while (navigate) {
+    // this while loop runs extremely fast. every time it runs, it prioritizes not running into anything, then aligning rotation, then clearing obstacles, and lastly moving forward.
 
-void protectSensors(float power, float time) {
-  
+    float y = Enes100.getY();
+    float x = Enes100.getX();
+    float t = Enes100.getTheta();
+    float dist = getDistance();
+
+    // keep distance alignment
+    if (dist < tooClose) {                        // if too close
+      move(3*pi/2, speed, 0);                       // back up
+      continue;
+    }
+    
+    // theta alignment
+    if (t > thetaRange) {                         // if above max theta range
+      // move(0, 0, 0.5);
+      moveWithTime(0, 0, speed/2, rotateTime);
+      continue;
+    } else if (t < -thetaRange) {                 // if below min theta range 
+      // move(0, 0, -0.5);
+      moveWithTime(0, 0, -speed/2, rotateTime);
+      continue;
+    }
+
+    // y alignment
+    if (y > (2-yBoundary)) {                      // if reaches highest position
+      dir = 0;                                      // switch direction to going downwards
+      move(0, speed, 0);                            // move downwards
+    } else if (y < yBoundary) {                   // if reaches lowest...
+      dir = pi;                                     // switch direction to going upwards
+      move(pi, speed, 0);                           // move upwards
+    }
+
+    // if no alignments needed, but blocked, then strafe
+    if (dist < strafeDist && dist > tooClose) {   // if blocked
+      sStrafe();                                    // set strafe wheel speeds
+      move(dir, speed, 0);                          // move in direction -- either up or down
+      clearedOb = false;                            // note that there is an obstacle ahead
+    }
+
+    // if not detecting an obstacle anymore
+    if (dist > strafeDist && clearedOb == false) {    // if we have cleared the edge of an obstacle
+      moveWithTime(dir, speed, 0, clearTime/speed);     // clear the obstacle
+      delay(2000);
+      clearedOb = true;                                 // note that there is no longer an obstacle ahead
+    }
+
+    // if cleared obstacle, then move forward
+    if (clearedOb == true) {                          // if there is no obstacle ahead..
+      move(pi/2, speed, 0);                             // move forwards
+    }
+
+    // once reached the end of the arena, stop navigating
+    if (x > xBoundary) {
+      navigate = false;
+    }
+
+  }
+
+  // ending sequence
+  moveUntilBlocked(200, speed);
+  servo.attach(2);
+  for (int ang = 180; ang > (60); ang--) {
+    servo.write(ang);
+    delay(30);
+  }
+  servo.detach();
 }
