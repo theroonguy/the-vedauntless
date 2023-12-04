@@ -83,7 +83,7 @@ void setup() {
       turnToTheta(0, pi / 20);
       delay(500);
       sForward();
-      moveWithTime(pi / 2, speed, 0, 3000 / speed);
+      moveWithTime(pi / 2, speed, 0, 2000 / speed);
 
     } else {
       Enes100.mission(DIRECTION, 0);
@@ -92,7 +92,7 @@ void setup() {
       turnToTheta(0, pi / 20);
       digitalWrite(52, LOW);
       sForward();
-      moveWithTime(pi / 2, speed, 0, 3000 / speed);
+      moveWithTime(pi / 2, speed, 0, 2000 / speed);
       turnToTheta(pi / 4, pi / 20);
       turnToTheta(0, pi / 20);
       delay(500);
