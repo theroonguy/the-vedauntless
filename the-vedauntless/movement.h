@@ -152,4 +152,3 @@ void sStrafe() {
   leftRearMult = 1;
   rightRearMult = 1;
 }
-

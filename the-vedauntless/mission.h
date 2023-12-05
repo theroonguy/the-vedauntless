@@ -1,16 +1,3 @@
-// NAVIGATION
-void moveUntilBlocked(float minDist, float power, float xVal = 4) {
-  sForward();
-  // in mm
-
-  float dist = getDistance();
-  while (dist > minDist && Enes100.getX() < xVal) {
-    move(pi / 2, power, 0);
-    dist = getDistance();
-  }
-  move(0, 0, 0);
-}
-
 void navToSite(float distance) {
   bool atMission = false;
   float x, y, t;
@@ -161,8 +148,7 @@ int detectLength(float error) {
     move(pi, 0.5, 0);                             // strafe to the left
     currentDist = getDistance();
   }
-
-  moveWithTime(0, 0.5, 0, 200);  // move back into range of wall
+  moveWithTime(0, 0.5, 0, 400);  // move back into range of wall
   currentDist = getDistance();
   delay(1000);
 
@@ -256,8 +242,8 @@ void navigateObstacles(float speed) {
   int backUpTime = 400;       // (mS) duration of back up movement
   int clearTime = 1500;       // (mS) time to clear an obstacle
   int rotateTime = 100;       // (mS) duration of rotation correction
-  float yBoundary = 0.5;      // (m) boundary to not exceed from top and bottom
-  float xBoundary = 3.5;      // (m) end of course, when to stop navigating
+  float yBoundary = 0.35;      // (m) boundary to not exceed from top and bottom
+  float xBoundary = 3.35;      // (m) end of course, when to stop navigating
   float thetaRange = pi/16;   // (rad) allowed range of theta
 
   float dir = pi;    // direction of sideways movement -- either pi or 0
@@ -328,13 +314,4 @@ void navigateObstacles(float speed) {
     }
 
   }
-
-  // ending sequence
-  moveUntilBlocked(200, speed);
-  servo.attach(2);
-  for (int ang = 180; ang > (60); ang--) {
-    servo.write(ang);
-    delay(30);
-  }
-  servo.detach();
 }

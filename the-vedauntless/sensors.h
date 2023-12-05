@@ -9,6 +9,55 @@ int R = 0;
 int G = 0;
 int B = 0;
 
+// DISTANCE SENSOR
+#include "Seeed_vl53l0x.h"
+Seeed_vl53l0x VL53L0X;
+
+#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
+#define SERIAL SerialUSB
+#else
+#define SERIAL Serial
+#endif
+
+void initDistSensor() {
+  //Distance setup
+  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+  Status = VL53L0X.VL53L0X_common_init();
+  if (VL53L0X_ERROR_NONE != Status) {
+    SERIAL.println("start vl53l0x mesurement failed!");
+    VL53L0X.print_pal_error(Status);
+    while (1)
+      ;
+  }
+
+  VL53L0X.VL53L0X_long_distance_ranging_init();
+
+  if (VL53L0X_ERROR_NONE != Status) {
+    SERIAL.println("start vl53l0x mesurement failed!");
+    VL53L0X.print_pal_error(Status);
+    while (1)
+      ;
+  }
+}
+
+void findDistance() {
+  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
+  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+  memset(&RangingMeasurementData, 0, sizeof(VL53L0X_RangingMeasurementData_t));
+  Status = VL53L0X.PerformSingleRangingMeasurement(&RangingMeasurementData);
+  SERIAL.print("Distance: ");
+  SERIAL.print(RangingMeasurementData.RangeMilliMeter);
+  SERIAL.println(" mm");
+  delay(100);
+}
+
+// POTENTIOMETER
+int potentiometer = A10;
+
+void initPot() {
+  pinMode(potentiometer, INPUT);
+}
+
 void initColorSensor() {
   Serial.println("Initializing sensors...");
 
@@ -25,7 +74,32 @@ void initColorSensor() {
   Serial.println("Color sensors set up.");
 }
 
+float getDistance() {
+  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
+  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
+  memset(&RangingMeasurementData, 0, sizeof(VL53L0X_RangingMeasurementData_t));
+  Status = VL53L0X.PerformSingleRangingMeasurement(&RangingMeasurementData);
+  return RangingMeasurementData.RangeMilliMeter;
+}
+
+void moveUntilBlocked(float minDist, float power, float xVal = 4) {
+  sForward();
+  // in mm
+  float dist = getDistance();
+  while (dist < minDist && Enes100.getX() < xVal) {
+    move(pi / 2, power, 0);
+    dist = getDistance();
+  }
+  dist = getDistance();
+  while (dist > minDist && Enes100.getX() < xVal) {
+    move(pi / 2, power, 0);
+    dist = getDistance();
+  }
+  move(0, 0, 0);
+}
+
 bool detectAnomaly() {
+  moveUntilBlocked(60, 1);
   //Red
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
@@ -93,63 +167,6 @@ bool isAtAnomaly() {
     return true;
   } else { return false; }
 
-}
-
-// DISTANCE SENSOR
-#include "Seeed_vl53l0x.h"
-Seeed_vl53l0x VL53L0X;
-
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-#define SERIAL SerialUSB
-#else
-#define SERIAL Serial
-#endif
-
-void initDistSensor() {
-  //Distance setup
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-  Status = VL53L0X.VL53L0X_common_init();
-  if (VL53L0X_ERROR_NONE != Status) {
-    SERIAL.println("start vl53l0x mesurement failed!");
-    VL53L0X.print_pal_error(Status);
-    while (1)
-      ;
-  }
-
-  VL53L0X.VL53L0X_long_distance_ranging_init();
-
-  if (VL53L0X_ERROR_NONE != Status) {
-    SERIAL.println("start vl53l0x mesurement failed!");
-    VL53L0X.print_pal_error(Status);
-    while (1)
-      ;
-  }
-}
-
-void findDistance() {
-  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-  memset(&RangingMeasurementData, 0, sizeof(VL53L0X_RangingMeasurementData_t));
-  Status = VL53L0X.PerformSingleRangingMeasurement(&RangingMeasurementData);
-  SERIAL.print("Distance: ");
-  SERIAL.print(RangingMeasurementData.RangeMilliMeter);
-  SERIAL.println(" mm");
-  delay(100);
-}
-
-float getDistance() {
-  VL53L0X_RangingMeasurementData_t RangingMeasurementData;
-  VL53L0X_Error Status = VL53L0X_ERROR_NONE;
-  memset(&RangingMeasurementData, 0, sizeof(VL53L0X_RangingMeasurementData_t));
-  Status = VL53L0X.PerformSingleRangingMeasurement(&RangingMeasurementData);
-  return RangingMeasurementData.RangeMilliMeter;
-}
-
-// POTENTIOMETER
-int potentiometer = A10;
-
-void initPot() {
-  pinMode(potentiometer, INPUT);
 }
 
 float readPot() {
