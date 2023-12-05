@@ -12,8 +12,8 @@ float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
 #include "mission.h"
 
 // INPUTS
-bool doMission = false;
-bool testColor = true;
+bool doMission = true;
+bool testColor = false;
 int arucoID = 13;
 
 void setup() {
@@ -108,6 +108,8 @@ void setup() {
 
     // OBSTACLE NAVIGATION
     navigateObstacles(speed);
+
+    moveUntilBlocked(1, 100);
 
     // FINAL SEQUENCE
     servo.attach(2);

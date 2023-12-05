@@ -99,7 +99,7 @@ void moveUntilBlocked(float minDist, float power, float xVal = 4) {
 }
 
 bool detectAnomaly() {
-  moveUntilBlocked(60, 1);
+  moveUntilBlocked(75, 1);
   //Red
   digitalWrite(S2, LOW);
   digitalWrite(S3, LOW);
