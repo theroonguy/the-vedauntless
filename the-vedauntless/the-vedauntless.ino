@@ -9,10 +9,8 @@ float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
 
 // Import modules
 #include "Enes100.h"
-#include "util.h"
 #include "sensors.h"
 #include "movement.h"
-#include "temp.h"
 #include "mission.h"
 
 // INPUTS
