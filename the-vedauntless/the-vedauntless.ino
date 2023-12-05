@@ -82,31 +82,22 @@ void setup() {
       digitalWrite(52, LOW);
       sForward();
       moveWithTime(3 * pi / 2, speed, 0, 2500 / speed);
-      turnToTheta(pi / 4, pi / 20);
       turnToTheta(0, pi / 20);
-      delay(500);
-      sForward();
-      moveWithTime(pi / 2, speed, 0, 2000 / speed);
+      // delay(500);
+      // sForward();
+      // moveWithTime(pi / 2, speed, 0, 2000 / speed);
 
     } else {
       Enes100.mission(DIRECTION, 0);
       turnToTheta(0, pi / 20);
-      delay(500);
-      turnToTheta(0, pi / 20);
       digitalWrite(52, LOW);
-      sForward();
-      moveWithTime(pi / 2, speed, 0, 2000 / speed);
-      turnToTheta(pi / 4, pi / 20);
-      turnToTheta(0, pi / 20);
-      delay(500);
-      //logic
+      // sForward();
+      // moveWithTime(pi / 2, speed, 0, 2000 / speed);
       length = anomalyLogic(height, length);
     }
 
     Enes100.mission(LENGTH, length);
     Enes100.mission(HEIGHT, height);
-
-    delay(1000);
 
     // OBSTACLE NAVIGATION
     navigateObstacles(speed);

@@ -166,7 +166,7 @@ bool turnToMission(float totalTime, float error) {
 
   float startTime = millis();
 
-  moveWithTime(pi, 0.5, 0, totalTime);          // move to the left
+  moveWithTime(pi, 0.5, 0, totalTime);  // move to the left
   while (getDistance() > error) { move(0, 0.5, 0); }
   moveWithTime(0, 0.5, 0, 200);
 }

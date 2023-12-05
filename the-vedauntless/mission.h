@@ -160,7 +160,7 @@ void navigateObstacles(float speed) {
 
   float dir = pi;    // direction of sideways movement -- either pi or 0
   bool aligning = false;
-  bool clearedOb = false;
+  bool clearedOb = true;
   bool navigate = true;
 
   while (navigate) {
@@ -210,7 +210,6 @@ void navigateObstacles(float speed) {
       sStrafe();
       Enes100.println("Cleared obstacle");
       moveWithTime(dir, speed, 0, clearTime/speed);     // clear the obstacle
-      delay(clearTime/speed);
       clearedOb = true;                                 // note that there is no longer an obstacle ahead
     }
 
@@ -222,11 +221,12 @@ void navigateObstacles(float speed) {
 
     // once reached the end of the arena, stop navigating
     if (x > xBoundary) {
+      Enes100.println("End of navigation");
       navigate = false;
-      move(0, 0, 0);
     }
 
   }
+  move(0, 0, 0);
 }
 
 void alignY(float yVal, float error, float dir) {
