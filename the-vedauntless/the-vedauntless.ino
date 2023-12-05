@@ -1,13 +1,17 @@
 // THE VEDAUNTLESS -- FINAL CODE
 
+float norm(float xI, float yI, float xF, float yF) {
+  return float(sqrt(pow((xF - xI), 2) + pow((yF - yI), 2)));
+}
+
 float batteryLevel = 1.5;  //Full battery ~1.7
 float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
 
 // Import modules
 #include "Enes100.h"
 #include "util.h"
-#include "movement.h"
 #include "sensors.h"
+#include "movement.h"
 #include "temp.h"
 #include "mission.h"
 
@@ -108,7 +112,6 @@ void setup() {
 
     // OBSTACLE NAVIGATION
     navigateObstacles(speed);
-
     moveUntilBlocked(1, 100);
 
     // FINAL SEQUENCE

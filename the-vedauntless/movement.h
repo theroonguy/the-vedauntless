@@ -60,10 +60,10 @@ void move(float theta, float power, float turn) {
   }
 
   // multiply final values by 255 to get max speed
-  leftFront *= 255*leftFrontMult;
-  rightFront *= 255*rightFrontMult;
-  leftRear *= 255*leftRearMult;
-  rightRear *= 255*rightRearMult;
+  leftFront *= 255 * leftFrontMult;
+  rightFront *= 255 * rightFrontMult;
+  leftRear *= 255 * leftRearMult;
+  rightRear *= 255 * rightRearMult;
 
   // run motors at proper speeds
   motor1.setSpeed(abs(int(leftFront)));
@@ -110,14 +110,13 @@ void moveWithTime(float theta, float power, float turn, float mS) {
   // function to move with a certain theta, power, and turn for a specific amount of time
 
   // start timer
-  moveTimer = millis();  // set moveTimer variable to current time
+  moveTimer = millis();                   // set moveTimer variable to current time
   while ((millis() - moveTimer) <= mS) {  // while we haven't reached mS time
     move(theta, power, turn);             // move
   }
 
   // when timer has finished, stop moving
   move(0, 0, 0);
-
 }
 
 void turnToTheta(float theta, float error) {
@@ -125,13 +124,51 @@ void turnToTheta(float theta, float error) {
   bool overcorrect = true;
   float dir = 0.5;
 
-  if (t > (theta-error) && t < (theta+error)) { overcorrect = false; }    // if already aligned, then don't overcorrect
-  if (abs(theta - t) > pi) { dir = -0.5; }                                // optimize rotation
-  while (t > (theta+error) || t < (theta-error)) {                        // if not aligned, rotate until aligned
+  if (t > (theta - error) && t < (theta + error)) { overcorrect = false; }  // if already aligned, then don't overcorrect
+  if (abs(theta - t) > pi) { dir = -0.5; }                                  // optimize rotation
+  while (t > (theta + error) || t < (theta - error)) {                      // if not aligned, rotate until aligned
     t = convertVisionTo2pi(Enes100.getTheta());
     move(0, 0, dir);
   }
-  if (overcorrect) { moveWithTime(0, 0, -dir, (2*error)*1000*batteryLevel/rotatePS); } // overcorrect if needed
+  if (overcorrect) { moveWithTime(0, 0, -dir, (2 * error) * 1000 * batteryLevel / rotatePS); }  // overcorrect if needed
+}
+
+void turnToFace(float timerange, float error) {
+  // timerange: strafe movement duration
+  // error: mm of error allowed
+
+  bool parallel = false;
+
+  moveWithTime(pi, 0.5, 0, timerange / 2);  //center
+
+  while (parallel == false) {
+    float dist = getDistance();
+    moveWithTime(0, 0.5, 0, timerange);  // move in parallel
+    float newDist = getDistance();
+
+    if ((abs(dist - newDist)) <= error) {
+      parallel = true;
+    } else {
+      moveWithTime(pi, 0.5, 0, timerange);
+      if ((newDist - dist) > 0) {  // rotate if not parallel
+        moveWithTime(0, 0, -1, 100);
+      } else {
+        moveWithTime(0, 0, 1, 100);
+      }
+    }
+  }
+
+  moveWithTime(pi, 0.5, 0, timerange / 2);  // recenter
+}
+
+bool turnToMission(float totalTime, float error) {
+  // assume already turned in the general direction of the mission.
+
+  float startTime = millis();
+
+  moveWithTime(pi, 0.5, 0, totalTime);          // move to the left
+  while (getDistance() > error) { move(0, 0.5, 0); }
+  moveWithTime(0, 0.5, 0, 200);
 }
 
 void signal() {
@@ -151,4 +188,20 @@ void sStrafe() {
   rightFrontMult = 0.84;
   leftRearMult = 1;
   rightRearMult = 1;
+}
+
+void moveUntilBlocked(float minDist, float power, float xVal = 4.5) {
+  sForward();
+  // in mm
+  float dist = getDistance();
+  while (dist < minDist && Enes100.getX() < xVal) {
+    move(pi / 2, power, 0);
+    dist = getDistance();
+  }
+  dist = getDistance();
+  while (dist > minDist && Enes100.getX() < xVal) {
+    move(pi / 2, power, 0);
+    dist = getDistance();
+  }
+  move(0, 0, 0);
 }
