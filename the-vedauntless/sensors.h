@@ -9,6 +9,39 @@ int R = 0;
 int G = 0;
 int B = 0;
 
+void initColorSensor() {
+  Serial.println("Initializing sensors...");
+
+  //Color setup
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(sensorOut, INPUT);
+  // Setting frequency-scaling to 20%
+  digitalWrite(S0, HIGH);
+  digitalWrite(S1, LOW);
+
+  Serial.println("Color sensors set up.");
+}
+
+int getColor(int color) {
+  // 0 for red, 1 for green, 2 for blue
+
+  if (color == 0) {  //Red
+    digitalWrite(S2, LOW);
+    digitalWrite(S3, LOW);
+  } else if (color == 1) {  //Green
+    digitalWrite(S2, HIGH);
+    digitalWrite(S3, HIGH);
+  } else {  //Blue
+    digitalWrite(S2, LOW);
+    digitalWrite(S3, HIGH);
+  }
+
+  return pulseIn(sensorOut, LOW);
+}
+
 // DISTANCE SENSOR
 #include "Seeed_vl53l0x.h"
 Seeed_vl53l0x VL53L0X;
@@ -53,61 +86,6 @@ int potentiometer = A10;
 
 void initPot() {
   pinMode(potentiometer, INPUT);
-}
-
-void initColorSensor() {
-  Serial.println("Initializing sensors...");
-
-  //Color setup
-  pinMode(S0, OUTPUT);
-  pinMode(S1, OUTPUT);
-  pinMode(S2, OUTPUT);
-  pinMode(S3, OUTPUT);
-  pinMode(sensorOut, INPUT);
-  // Setting frequency-scaling to 20%
-  digitalWrite(S0, HIGH);
-  digitalWrite(S1, LOW);
-
-  Serial.println("Color sensors set up.");
-}
-
-int getColor(int color) {
-  // 0 for red, 1 for green, 2 for blue
-
-  if (color == 0) {  //Red
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, LOW);
-  } else if (color == 1) {  //Green
-    digitalWrite(S2, HIGH);
-    digitalWrite(S3, HIGH);
-  } else {  //Blue
-    digitalWrite(S2, LOW);
-    digitalWrite(S3, HIGH);
-  }
-
-  return pulseIn(sensorOut, LOW);
-}
-
-bool isAtAnomaly() {
-  int R = getColor(0);
-  int G = getColor(1);
-  int B = getColor(2);
-
-  // if (G - R > 40 && B - R > 50) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
-
-  Serial.println(R);
-  Serial.println(G);
-  Serial.println(B);
-
-  if (R > 70) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 float readPot() {

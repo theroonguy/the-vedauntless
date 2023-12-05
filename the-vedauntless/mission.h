@@ -37,16 +37,14 @@ int detectLength(float error) {
 
   float xI = Enes100.getX();
   float yI = Enes100.getY();
-  //float startTime = millis();                     // record starting time
+
   while (abs(currentDist - startDist) < error) {  // strafe to the right until distance sensor reads a spike in readings -- the edge has been reached
     move(0, 0.5, 0);                              // strafe to the right
     currentDist = getDistance();
   }
+
   float xF = Enes100.getX();
   float yF = Enes100.getY();
-  //float endTime = millis();  // record ending time
-
-  //float deltaTime = endTime - startTime;
 
   moveWithTime(pi, 0.5, 0, 200);  // move back into range of wall
 
@@ -129,8 +127,6 @@ void navToSite(float distance) {
   t = convertVisionTo2pi(Enes100.getTheta());  // Your theta! Edited to be from 0 to 2pi, originally -pi to +pi, in radians, -1 if your aruco is not visible.
   v = Enes100.isVisible();                     // Is your aruco visible? True or False.
 
-  // moveWithTime(0, 0, 1, 1000);
-
   // face the other side
   if (v) {
     if (y <= 1) {
@@ -148,17 +144,17 @@ void navToSite(float distance) {
 
 void navigateObstacles(float speed) {
 
-  // nav settings    
-  int strafeDist = 200;       // (mm) distance to strafe
-  int tooClose = 100;         // (mm) distance to start backing up
-  int backUpTime = 400;       // (mS) duration of back up movement
-  int clearTime = 1200;       // (mS) time to clear an obstacle
-  int rotateTime = 100;       // (mS) duration of rotation correction
+  // nav settings
+  int strafeDist = 200;        // (mm) distance to strafe
+  int tooClose = 100;          // (mm) distance to start backing up
+  int backUpTime = 400;        // (mS) duration of back up movement
+  int clearTime = 1200;        // (mS) time to clear an obstacle
+  int rotateTime = 100;        // (mS) duration of rotation correction
   float yBoundary = 0.35;      // (m) boundary to not exceed from top and bottom
   float xBoundary = 3.35;      // (m) end of course, when to stop navigating
-  float thetaRange = pi/16;   // (rad) allowed range of theta
+  float thetaRange = pi / 16;  // (rad) allowed range of theta
 
-  float dir = pi;    // direction of sideways movement -- either pi or 0
+  float dir = pi;  // direction of sideways movement -- either pi or 0
   bool aligning = false;
   bool clearedOb = true;
   bool navigate = true;
@@ -172,51 +168,53 @@ void navigateObstacles(float speed) {
     float dist = getDistance();
 
     // keep distance alignment
-    if (dist < tooClose) {                        // if too close
-      clearedOb = false;                            // note that there is an obstacle ahead
-      move(3*pi/2, speed, 0);                       // back up
+    if (dist < tooClose) {         // if too close
+      clearedOb = false;           // note that there is an obstacle ahead
+      move(3 * pi / 2, speed, 0);  // back up
       continue;
     }
-    
+
     // theta alignment
-    if (t > thetaRange) {                         // if above max theta range
-      // move(0, 0, 0.5);
-      moveWithTime(0, 0, speed/2, rotateTime);
+    if (t > thetaRange) {  // if above max theta range
+      moveWithTime(0, 0, speed / 2, rotateTime);
       continue;
-    } else if (t < -thetaRange) {                 // if below min theta range 
-      // move(0, 0, -0.5);
-      moveWithTime(0, 0, -speed/2, rotateTime);
+    } else if (t < -thetaRange) {  // if below min theta range
+      moveWithTime(0, 0, -speed / 2, rotateTime);
       continue;
     }
 
     // y alignment
-    if (y > (2-yBoundary)) {                      // if reaches highest position
-      dir = 0;                                      // switch direction to going downwards
-      move(0, speed, 0);                            // move downwards
-    } else if (y < yBoundary) {                   // if reaches lowest...
-      dir = pi;                                     // switch direction to going upwards
-      move(pi, speed, 0);                           // move upwards
+    if (y > (2 - yBoundary)) {   // if reaches highest position
+      dir = 0;                   // switch direction to going downwards
+    } else if (y < yBoundary) {  // if reaches lowest...
+      dir = pi;                  // switch direction to going upwards
     }
 
     // if no alignments needed, but blocked, then strafe
-    if (dist < strafeDist && dist > tooClose) {   // if blocked
-      clearedOb = false;                            // note that there is an obstacle ahead
-      sStrafe();                                    // set strafe wheel speeds
-      move(dir, speed, 0);                          // move in direction -- either up or down
+    if (dist < strafeDist && dist > tooClose) {  // if blocked
+      clearedOb = false;                         // note that there is an obstacle ahead
+      sStrafe();                                 // set strafe wheel speeds
+      move(dir, speed, 0);                       // move in direction -- either up or down
     }
 
     // if not detecting an obstacle anymore
-    if (dist > strafeDist && clearedOb == false) {    // if we have cleared the edge of an obstacle
+    if (dist > strafeDist && clearedOb == false) {  // if we have cleared the edge of an obstacle
       sStrafe();
       Enes100.println("Cleared obstacle");
-      moveWithTime(dir, speed, 0, clearTime/speed);     // clear the obstacle
-      clearedOb = true;                                 // note that there is no longer an obstacle ahead
+      moveWithTime(dir, speed, 0, clearTime / speed);  // clear the obstacle
+      clearedOb = true;                                // note that there is no longer an obstacle ahead
     }
 
     // if cleared obstacle, then move forward
-    if (clearedOb == true) {                          // if there is no obstacle ahead..
+    if (clearedOb == true) {  // if there is no obstacle ahead..
       sForward();
-      move(pi/2, speed, 0);                             // move forwards
+      if (y > (2 - yBoundary)) {        // if beyond highest position
+        move(pi/4, speed, 0);             // slant downwards
+      } else if (y < yBoundary) {       // if beyond lowest...
+        move(3*pi/4), speed, 0);          // slant upwards
+      } else {                          // if within y boundaries...
+        move(pi / 2, speed, 0);           // move forwards
+      }
     }
 
     // once reached the end of the arena, stop navigating
@@ -224,12 +222,11 @@ void navigateObstacles(float speed) {
       Enes100.println("End of navigation");
       navigate = false;
     }
-
   }
   move(0, 0, 0);
 }
 
-void alignY(float yVal, float error, float dir) {
+void alignY(float yVal, float error) {
   sStrafe();
 
   float y = Enes100.getY();
@@ -244,19 +241,5 @@ void alignY(float yVal, float error, float dir) {
       y = Enes100.getY();
       move(0, speed, 0);
     }
-  }
-
-}
-
-void alignX(float xVal, float error) {
-  float x = Enes100.getX();
-
-  while (x > (xVal + error)) {
-    x = Enes100.getX();
-    move(3 * pi / 2, 0.5, 0);
-  }
-  while (x < (xVal + error)) {
-    x = Enes100.getX();
-    move(pi / 2, 0.5, 0);
   }
 }

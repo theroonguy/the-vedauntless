@@ -73,7 +73,6 @@ void setup() {
     } else {
       height = 270;
     }
-    // Enes100.mission(HEIGHT, height);
     servo.detach();
 
     // ANOMALY DETECTION & DIMENSION LOGIC
