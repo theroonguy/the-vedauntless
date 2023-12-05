@@ -254,11 +254,11 @@ void navigateObstacles(float speed) {
   int strafeDist = 200;       // (mm) distance to strafe
   int tooClose = 100;         // (mm) distance to start backing up
   int backUpTime = 400;       // (mS) duration of back up movement
-  int clearTime = 1500;       // (mS) time to clear an obstacle
+  int clearTime = 1200;       // (mS) time to clear an obstacle
   int rotateTime = 100;       // (mS) duration of rotation correction
-  float yBoundary = 0.5;      // (m) boundary to not exceed from top and bottom
+  float yBoundary = 0.4;      // (m) boundary to not exceed from top and bottom
   float xBoundary = 3.5;      // (m) end of course, when to stop navigating
-  float thetaRange = pi/16;   // (rad) allowed range of theta
+  float thetaRange = pi/20;   // (rad) allowed range of theta
 
   float dir = pi;    // direction of sideways movement -- either pi or 0
   bool aligning = false;
