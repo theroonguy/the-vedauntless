@@ -111,20 +111,13 @@ void moveWithTime(float theta, float power, float turn, float mS) {
 
   // start timer
   moveTimer = millis();  // set moveTimer variable to current time
-
-  Serial.println("Moving started...");
-
   while ((millis() - moveTimer) <= mS) {  // while we haven't reached mS time
     move(theta, power, turn);             // move
   }
 
   // when timer has finished, stop moving
   move(0, 0, 0);
-  Serial.println("Moving stopped.");
 
-  // if ((millis() - moveTimer) > mS) {       // when timer has finished
-  //   move(0, 0, 0);      // stop moving
-  // }
 }
 
 void turnToTheta(float theta, float error) {

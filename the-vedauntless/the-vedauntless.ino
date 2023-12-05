@@ -13,6 +13,7 @@ float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
 
 // INPUTS
 bool doMission = true;
+bool testColor = false;
 int arucoID = 13;
 
 void setup() {
@@ -171,4 +172,7 @@ void setup() {
 }
 
 void loop() {
+  if (testColor) {
+    detectAnomaly();
+  }
 }

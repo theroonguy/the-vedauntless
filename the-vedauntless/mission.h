@@ -254,7 +254,7 @@ void navigateObstacles(float speed) {
   int strafeDist = 200;       // (mm) distance to strafe
   int tooClose = 100;         // (mm) distance to start backing up
   int backUpTime = 400;       // (mS) duration of back up movement
-  int clearTime = 1000;       // (mS) time to clear an obstacle
+  int clearTime = 1500;       // (mS) time to clear an obstacle
   int rotateTime = 100;       // (mS) duration of rotation correction
   float yBoundary = 0.5;      // (m) boundary to not exceed from top and bottom
   float xBoundary = 3.5;      // (m) end of course, when to stop navigating
@@ -275,6 +275,7 @@ void navigateObstacles(float speed) {
 
     // keep distance alignment
     if (dist < tooClose) {                        // if too close
+      clearedOb = false;                            // note that there is an obstacle ahead
       move(3*pi/2, speed, 0);                       // back up
       continue;
     }
@@ -301,9 +302,9 @@ void navigateObstacles(float speed) {
 
     // if no alignments needed, but blocked, then strafe
     if (dist < strafeDist && dist > tooClose) {   // if blocked
+      clearedOb = false;                            // note that there is an obstacle ahead
       sStrafe();                                    // set strafe wheel speeds
       move(dir, speed, 0);                          // move in direction -- either up or down
-      clearedOb = false;                            // note that there is an obstacle ahead
     }
 
     // if not detecting an obstacle anymore
