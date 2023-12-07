@@ -5,7 +5,7 @@ float norm(float xI, float yI, float xF, float yF) {
 }
 
 float batteryLevel = 1.5;  //Full battery ~1.7
-float speed = 1;           //ALSO CHANGE SPEED IN findPath(); (mission.h)
+float speed = 1;           
 
 // Import modules
 #include "Enes100.h"
@@ -82,16 +82,13 @@ void setup() {
       sForward();
       moveWithTime(3 * pi / 2, speed, 0, 2500 / speed);
       turnToTheta(0, pi / 20);
-      // delay(500);
-      // sForward();
-      // moveWithTime(pi / 2, speed, 0, 2000 / speed);
+      alignY(1, 0.1);
 
     } else {
       Enes100.mission(DIRECTION, 0);
       turnToTheta(0, pi / 20);
+      alignY(1, 0.1);
       digitalWrite(52, LOW);
-      // sForward();
-      // moveWithTime(pi / 2, speed, 0, 2000 / speed);
       length = anomalyLogic(height, length);
     }
 
@@ -100,7 +97,7 @@ void setup() {
 
     // OBSTACLE NAVIGATION
     navigateObstacles(speed);
-    moveUntilBlocked(1, 100);
+    moveUntilBlocked(1, 200);
 
     // FINAL SEQUENCE
     servo.attach(2);

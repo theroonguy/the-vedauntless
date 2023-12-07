@@ -148,11 +148,11 @@ void navigateObstacles(float speed) {
   int strafeDist = 200;        // (mm) distance to strafe
   int tooClose = 100;          // (mm) distance to start backing up
   int backUpTime = 400;        // (mS) duration of back up movement
-  int clearTime = 1200;        // (mS) time to clear an obstacle
+  int clearTime = 1300;        // (mS) time to clear an obstacle
   int rotateTime = 100;        // (mS) duration of rotation correction
   float yBoundary = 0.35;      // (m) boundary to not exceed from top and bottom
   float xBoundary = 3.35;      // (m) end of course, when to stop navigating
-  float thetaRange = pi / 16;  // (rad) allowed range of theta
+  float thetaRange = pi / 20;  // (rad) allowed range of theta
 
   float dir = pi;  // direction of sideways movement -- either pi or 0
   bool aligning = false;
@@ -203,6 +203,7 @@ void navigateObstacles(float speed) {
       Enes100.println("Cleared obstacle");
       moveWithTime(dir, speed, 0, clearTime / speed);  // clear the obstacle
       clearedOb = true;                                // note that there is no longer an obstacle ahead
+      if ( dir = 0 ) { dir = pi; } else { dir = 0; }    // switch direction to optimize path
     }
 
     // if cleared obstacle, then move forward
@@ -211,19 +212,24 @@ void navigateObstacles(float speed) {
       if (y > (2 - yBoundary)) {        // if beyond highest position
         move(pi/4, speed, 0);             // slant downwards
       } else if (y < yBoundary) {       // if beyond lowest...
-        move(3*pi/4), speed, 0);          // slant upwards
+        move(3*pi/4, speed, 0);          // slant upwards
       } else {                          // if within y boundaries...
         move(pi / 2, speed, 0);           // move forwards
       }
+    }
+
+    if (x > (xBoundary - 0.1) && x < xBoundary ) {
+      dir = pi;
     }
 
     // once reached the end of the arena, stop navigating
     if (x > xBoundary) {
       Enes100.println("End of navigation");
       navigate = false;
+      move(0, 0, 0);
+      break;
     }
   }
-  move(0, 0, 0);
 }
 
 void alignY(float yVal, float error) {
